@@ -1,16 +1,15 @@
 # Capstone Project (Weeks 12–14)
 
-## Goal
-Produce publication-quality AI safety research in 3 weeks.
-
-## Project Idea
-_TODO: Define research question_
+## Research Question
+_TODO: Refine during weeks 1–11_
 
 ## Plan
-- **Week 12**: Literature review, define scope, initial experiments
+- **Week 12**: Scope, literature review, initial experiments
 - **Week 13**: Core implementation and experimentation
 - **Week 14**: Analysis, write-up, presentation
 
 ## Resources
-- TA guidance and peer review
-- Compute credits provided by TARA
+- ARENA exercises as reference implementations
+- HatCat codebase (https://github.com/p0ss/HatCat)
+- TA guidance and peer feedback
+- Compute credits from TARA
