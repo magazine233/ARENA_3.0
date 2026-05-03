@@ -2,6 +2,7 @@
 
 *From v2 proposal to running code. First-time-execution oriented.*
 *Companion to `capstone_proposal_v2.md` and `participant_project_guide_filled.md`.*
+*Audited against HatCat — see `project/notes/hatcat_audit.md`. **Section "HatCat alignment" below corrects mis-assumptions in earlier drafts.***
 
 ---
 
@@ -22,6 +23,55 @@ The Anthropic emotions recipe is essentially:
 Once you extract activations once and save them to disk, every subsequent analysis (training Conditions A/B/C probes, evaluating, bootstrapping, comparing, plotting) runs on your laptop in seconds.
 
 This means your Lambda Labs spend is *bounded* by activation extraction — and you can be aggressive about minimising GPU time by batching everything into one or two extraction runs rather than spinning up GPUs interactively.
+
+---
+
+## HatCat alignment (read this first)
+
+The earlier draft of this plan over-estimated how much you can reuse from HatCat at runtime. The audit (full report in `project/notes/hatcat_audit.md`) found:
+
+**What HatCat genuinely gives you (drop-in or near drop-in):**
+
+- **The full SUMO/WordNet concept ontology for all 12 of your target concepts**, already curated in `concept_packs/first-light/concepts/layer{2,4,5}/*.json`. Each JSON has SUMO definition, WordNet synsets/lemmas, parent/child links, `relationships.opposite` with rationale, safety tags, and seed terms. **Concept enumeration is now free.**
+- **A clean PCA confound-projection function:** `src/hat/steering/manifold.py:estimate_contamination_subspace()` is essentially the Anthropic recipe. Lift it directly into `src/probes.py`.
+- **Six contrastive prompt templates** (`src/map/training/sumo_data_generation.py:415–424`) — the actual content of HatCat's "yin-yang" idiom. Lift verbatim.
+- **A clean concept-pack loader API:** `from src.map.registry.concept_pack import load_concept_pack, Concept, ConceptPack`. Use this instead of writing your own `data/concepts.yaml`.
+
+**What HatCat does *not* give you (you write these from scratch):**
+
+- TransformerLens integration. HatCat doesn't use it at all — uses raw `transformers` + PyTorch hooks.
+- A mean-difference probe class. HatCat's canonical probe is an MLP, not mean-diff. Yours is ~15 lines.
+- Anthropic Claude story-generation pipeline. HatCat has no `anthropic` SDK code.
+- A test set, an A-vs-B-vs-C evaluation harness, paired-bootstrap statistics, AUC heatmaps, the causal-validation correlation loop, or pre-trained lenses for Gemma 2 9B.
+- A turnkey "Condition C" boundary-articulation generator. HatCat's enrichment scripts produce concept-augmented prompts but not "contrast concept X with concept Y" articulations.
+
+**A terminology correction the v2 proposal got slightly wrong:** "yin-yang sampling" in HatCat is *not* a generic concept-graph hard-negative sampler. It's a small set of contrastive prompt templates ("List things least similar to X") that get mixed into the negative pool at ~20%. The thing the v2 proposal calls Condition B's "hard negatives from ontologically nearby concepts" is *not* what HatCat's `yin_yang_ratio` parameter does — you build that on top, using HatCat's `relationships.opposite` field in each concept JSON as the seed signal.
+
+### The decision you have to make: Path A or Path B
+
+| | **Path A — keep TransformerLens (recommended)** | **Path B — go HatCat-native** |
+|---|---|---|
+| Activation extraction | `HookedTransformer` hooks | `AutoModelForCausalLM(output_hidden_states=True)` + `register_forward_hook` |
+| Familiarity | You used TransformerLens in ARENA Ch1 | New API to learn |
+| HatCat reuse | Data + reference only | Could plug into HatCat's existing training scaffolding |
+| Independence | Your code is yours; HatCat is a library you import from | More entangled with HatCat's structure |
+| Risk | Low — well-trodden path | Moderate — HatCat's classifier-training assumes its own data flow |
+
+**Recommendation: Path A.** Treat HatCat as a *data and reference dependency*, not a *runtime dependency*. Pull in the concept ontology, lift the PCA helper, copy the yin-yang prompt templates — but keep your activation extraction and probe training in your own TransformerLens-based code.
+
+### A model-size decision worth thinking about
+
+HatCat's published lens pack is for **Gemma 3 4B** (`HatCatFTW/lens-gemma-3-4b-first-light-v1`), not Gemma 2 9B. If you want a "free" HatCat-trained probe baseline to compare your mean-diff probes against, you'd need to switch to `google/gemma-3-4b-pt`. Trade-offs:
+
+| | Gemma 2 9B Instruct (current plan) | Gemma 3 4B (HatCat-aligned) |
+|---|---|---|
+| Anthropic-recipe precedent | Closer to Sonnet 4.5 in size | Smaller — possibly noisier representations |
+| HatCat lens-pack baseline | Not available | Available — directly comparable |
+| Compute on A100 40GB | Comfortable (fp16 ≈ 18 GB) | Trivial (fp16 ≈ 8 GB) |
+| Wallclock per forward pass | ~2× | Baseline |
+| Lambda budget impact | ~$22 extraction | ~$11 extraction |
+
+**Recommendation: stick with Gemma 2 9B unless the HatCat lens-pack baseline is genuinely valuable to your write-up.** The Anthropic precedent argument is the stronger one. But this is a real choice — flag it for Ahmed.
 
 ---
 
@@ -157,19 +207,21 @@ The goal is to verify the *whole pipeline works on toy data* before touching the
 
 - [ ] All four accounts set up (Anthropic, HuggingFace + Gemma access, Lambda, GitHub)
 - [ ] New `capstone-knowing-the-graph` repo created on GitHub, cloned locally
+- [ ] **HatCat cloned alongside** as a sibling directory (`git clone https://github.com/p0ss/HatCat.git ../HatCat`). You'll import from it, not vendor it into your repo.
 - [ ] Local Python env created and activated; `transformer_lens`, `transformers`, `anthropic`, `torch` installed
 - [ ] `.env` file with `ANTHROPIC_API_KEY` and `HF_TOKEN` (gitignored — never commit this)
-- [ ] **Smoke test 1 (local):** generate one story via the Claude API and print it. ~10 lines of code.
-- [ ] **Smoke test 2 (Lambda):** spin up an A100, ssh in, install requirements, load Gemma 2 9B, run `model("Hello world")`, extract one residual-stream activation at layer 21, save the tensor, terminate the instance. **Time-box this to 2 hours and don't forget to terminate.**
+- [ ] **Smoke test 1 (local, Claude API):** generate one story via the Claude API and print it. ~10 lines of code.
+- [ ] **Smoke test 2 (local, HatCat):** `from src.map.registry.concept_pack import load_concept_pack` (with HatCat on `PYTHONPATH`). Load `concept_packs/first-light/`. Print the JSON for the `deception` concept. Confirms you can read the ontology you'll be using throughout.
+- [ ] **Smoke test 3 (Lambda):** spin up an A100, ssh in, install requirements, load Gemma 2 9B via `HookedTransformer.from_pretrained("gemma-2-9b-it")`, run a forward pass on `"Hello world"`, extract one residual-stream activation at layer 21, save the tensor, **terminate the instance**. Time-box to 2 hours.
 
-If both smoke tests work, you're ready for Phase 1. If smoke test 2 chews 4 hours and still doesn't work, that's important information — surface it to Ahmed.
+If all three smoke tests work, you're ready for Phase 1. If smoke test 3 chews 4 hours and still doesn't work, that's important information — surface it to Ahmed.
 
 ### Phase 1 — Story generation (Week 12 days 1-2, all local, no GPU)
 
-- Define the 12 concepts in `data/concepts.yaml` with their SUMO neighbours
-- Write `src/generation.py`: a function that takes a concept and a topic, prompts Claude Sonnet 4.5 with the Anthropic-style template ("Write a paragraph in which a character experiences/embodies [concept]…"), returns the story
+- **Load the 12 concepts from HatCat** rather than redefining them: `load_concept_pack("../HatCat/concept_packs/first-light")` and pull the relevant `Concept` objects. Each concept's `definition`, `wordnet.lemmas`, and `relationships.opposite` are immediately useful for prompting.
+- Write `src/generation.py`: a function that takes a `Concept` object and a topic, prompts Claude Sonnet 4.5 with the Anthropic-style template ("Write a paragraph in which a character experiences/embodies [concept] — definition: …"), returns the story
 - Run for all 12 concepts × ~80 topics × ~12 stories per topic ≈ 12K stories, save to `data/stories/<concept>.jsonl`
-- Generate Condition C boundary articulations: for each concept pair (66 pairs), generate ~50 short passages explicitly contrasting the two
+- **Generate Condition C boundary articulations** by writing a fresh prompt — HatCat does *not* have a turnkey version of this. For each concept pair (66 pairs), prompt Claude with: "Write a short passage where the distinction between [concept X] and [concept Y] is the key thing the reader should notice. Concept X is defined as: …; concept Y is defined as: …" — using HatCat's `relationships.opposite` to seed which pairs are most interesting. Generate ~50 per pair.
 - Build a neutral corpus (~5K passages — Wikipedia paragraphs, technical writing, etc.) for PCA confound projection
 - **Cost:** ~$80 Claude API
 - **Wallclock:** half a day if you parallelise the API calls properly; a day if serial
@@ -194,8 +246,8 @@ This is the big GPU run.
 Now everything is fast and cheap.
 
 - Implement `src/probes.py`:
-  - `MeanDiffProbe`: takes per-concept activations, returns the difference vector (concept mean − grand mean across all concepts)
-  - `pca_confound_projection`: fit PCA on the neutral activations, project out top components covering 50% variance
+  - `MeanDiffProbe`: takes per-concept activations, returns the difference vector (concept mean − grand mean across all concepts). ~15 lines.
+  - `pca_confound_projection`: **lift `estimate_contamination_subspace` from `../HatCat/src/hat/steering/manifold.py:23` directly.** Re-target it from concept-vectors-as-input to neutral-corpus-activations-as-input (per the Anthropic recipe). The math is identical; only the data shape differs.
 - Train Condition A and B probes for all 12 concepts (B differs from A only in which negatives are sampled — no separate forward passes needed)
 - Save probe vectors to `probes/condition_a/` and `probes/condition_b/`
 - **Sanity check:** does Condition A reproduce Anthropic-style structure? Run PCA on the bank of 12 probes — does PC1 separate "honest" concepts (persuasion) from "deceptive" concepts (deception, lying)? Doesn't have to be perfect, but should be *something*.
@@ -270,7 +322,9 @@ In order:
 ## What to do *today* (after reading this)
 
 1. Re-read the Day-1 starter checklist above. Decide whether you can do it before Saturday's TARA session.
-2. Once you're comfortable with the plan, ask me to scaffold the actual repo skeleton — I can generate the initial `src/` modules, `.gitignore`, `pyproject.toml`, and the smoke-test scripts so you have working code on Day 1, not blank files.
-3. Mention to Ahmed at the next session that you're ready to start execution and would value a check-in mid-Phase 0 to make sure the smoke tests passed.
+2. **Decide Path A vs Path B** (see "HatCat alignment" section). Path A (TransformerLens) is recommended unless you have a reason to want HatCat's runtime scaffolding.
+3. **Decide Gemma 2 9B vs Gemma 3 4B** (see same section). Stick with 9B unless the HatCat lens-pack baseline is genuinely valuable to your write-up.
+4. Once you're comfortable with the plan, ask me to scaffold the actual repo skeleton — I can generate the initial `src/` modules, `.gitignore`, `pyproject.toml`, and the smoke-test scripts so you have working code on Day 1, not blank files.
+5. Mention to Ahmed at the next session that you're ready to start execution and would value a check-in mid-Phase 0 to make sure the smoke tests passed. Surface the Path A/B and 9B/4B decisions for his input.
 
 The biggest unknown for first-time execution is always Phase 0 — the moment when "I have an account at Lambda" turns into "I have working code that loads Gemma and reads activations." Once that's working, the rest is incremental.
