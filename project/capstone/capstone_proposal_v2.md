@@ -75,7 +75,7 @@ All three conditions use the Anthropic recipe (synthetic stories, token-50+ resi
 ### Condition C — Full ontological treatment
 
 - Same negatives as B (ontologically-nearby).
-- **Plus boundary-articulating training examples** generated via HatCat's self-prompting pipeline. These are short passages explicitly contrasting concept pairs along their distinguishing axes (e.g. *"He lied about the time"* labelled as deception-not-manipulation; *"He pressured her until she agreed"* labelled as manipulation-not-deception).
+- **Plus boundary-articulating training examples** generated via a fresh Claude-API prompting pipeline built for this project (HatCat does not provide a turnkey boundary-articulation generator, though its `relationships.opposite` field per concept JSON seeds the prompt). These are short passages explicitly contrasting concept pairs along their distinguishing axes (e.g. *"He lied about the time"* labelled as deception-not-manipulation; *"He pressured her until she agreed"* labelled as manipulation-not-deception).
 - This isolates whether **graph-derived boundary information** adds value beyond hard-negative sampling alone.
 
 ### Worked example of Condition C training data (to be expanded before week 12)
@@ -174,8 +174,8 @@ If steering doesn't get done, that's expected; the detection result is the headl
 
 ### Primary risks
 
-**1. Boundary-articulating examples don't carry enough signal.** Self-prompted Condition C examples might be linguistically similar to definitions and add no information beyond Condition A.
-*Mitigation:* Inspect ~50 generated examples in the first 3 days of week 12. If they look thin, hand-author a smaller set (~20 per concept pair) instead of relying on self-prompting alone. This is a precondition, not a fallback.
+**1. Boundary-articulating examples don't carry enough signal.** LLM-generated Condition C examples might be linguistically similar to definitions and add no information beyond Condition A.
+*Mitigation:* Inspect ~50 generated examples in the first 3 days of week 12. If they look thin, hand-author a smaller set (~20 per concept pair) instead of relying on LLM generation alone. This is a precondition, not a fallback.
 
 **2. Effect sizes too small for 12 concepts.** Per-pair confusion rates may be too noisy with only ~10 test items per concept.
 *Mitigation:* Increase test set to 15 per concept (180 total) if labelling time allows. Report effect sizes with bootstrap CIs, not p-values.
@@ -199,18 +199,18 @@ If A, B, and C produce statistically indistinguishable results, that is itself a
 
 ## HatCat Integration
 
-**Reused from HatCat:**
-- The SUMO/WordNet concept graph (`data/concept_graph/`)
-- Concept pack scaffolding for the 12 selected concepts
-- Yin-yang negative-sampling logic (used in Conditions B and C)
-- Self-prompting pipeline for boundary-articulating examples (used in Condition C)
+**Reused from HatCat (data + reference, not runtime):**
+- **Concept ontology:** the `concept_packs/first-light/` JSON tree, which already contains all 12 target concepts with SUMO definitions, WordNet synsets and lemmas, parent/child relationships, `relationships.opposite` with rationale, and safety tags. Loaded via `load_concept_pack` from `src.map.registry.concept_pack`.
+- **PCA confound-projection helper:** `estimate_contamination_subspace` from `src/hat/steering/manifold.py`, lifted directly into the probe-training code.
+- **Contrastive prompt templates:** the six "yin-yang" templates from `src/map/training/sumo_data_generation.py:415–424` (e.g. "List things least similar to X"), used to inflect a fraction of Condition B's negative pool.
 
-**Built fresh:**
-- The Anthropic-style probe training pipeline (mean-diff with PCA confound projection)
-- The three-condition harness
-- Test set construction and labelling
-- Evaluation and statistical analysis code
-- Steering experiment (if extended)
+**Built fresh (HatCat does not provide turnkey versions):**
+- **Condition B's hard-negative sampler** from ontologically nearby concepts. HatCat's `yin_yang_ratio` parameter is *not* a generic concept-graph hard-negative sampler — it mixes contrastive prompt templates into the negative pool at ~20%. The actual sampler that draws negatives from each target concept's ontological neighbours (using `relationships.opposite` and `parent_concepts` as the seed signal) is new code for this project.
+- **Condition C's boundary-articulation generator** — a Claude-API prompt pipeline written for this project. HatCat's `scripts/enrichment/` produces concept-augmented prompts but not "explicitly contrast concept X with concept Y" articulations.
+- **The Anthropic-style probe training pipeline** (mean-diff with PCA confound projection). HatCat's canonical probe is an MLP, not mean-diff.
+- **The three-condition harness, TransformerLens-based activation extraction, test set construction and labelling, A-vs-B-vs-C evaluation harness, paired-bootstrap statistics, and the steering experiment** (if extended). HatCat does not use TransformerLens.
+
+See `project/notes/hatcat_audit.md` for the full audit of what HatCat does and does not provide.
 
 ## Key Reading
 
@@ -223,7 +223,7 @@ If A, B, and C produce statistically indistinguishable results, that is itself a
 3. **Panickssery et al. — *"Steering Llama 2 via Contrastive Activation Addition"* (2024)** — Steering via contrastive directions; closest published precedent for the steering stretch goal.
    - https://arxiv.org/abs/2312.06681
 
-4. **HatCat repository (Hodgkin, 2025)** — Source of the yin-yang sampling and self-prompting pipelines used in Conditions B and C.
+4. **HatCat repository (Hodgkin, 2025)** — Source of the SUMO/WordNet concept ontology used throughout (every target concept curated as JSON with relationships and definitions), the PCA confound-projection helper, and the contrastive ("yin-yang") prompt templates seeding Condition B's negative pool. Treated as a data and reference dependency, not a runtime dependency.
    - https://github.com/p0ss/HatCat
 
 5. **SUMO + WordNet documentation** — Source of the concept graph and the relations used to define ontological neighborhoods.
