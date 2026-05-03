@@ -23,9 +23,9 @@ Empirically test whether injecting ontological structure (from SUMO/WordNet) at 
 **PROJECT PLAN:**
 Three-condition controlled experiment on twelve concepts from SUMO's `IntentionalPsychologicalProcess` neighborhood (deception, manipulation, persuasion, coercion, concealment, lying, half-truth, omission, deflection, gaslighting, framing, equivocation). Condition A is the Anthropic baseline (synthetic stories → mean-difference linear probe → PCA confound projection). Condition B adds hard-negative sampling from ontologically nearby concepts (controls for the metric-learning confound). Condition C adds boundary-articulating training examples generated via HatCat's self-prompting pipeline. Holds model (Gemma 2 9B), layer (21), and training-set size constant. Evaluates per-pair AUC on a held-out test set drawn from external sources (news case studies, ethics literature) and human-labelled — not LLM-generated. Statistical test: paired bootstrap. Causal validation via Anthropic's probe-target × steering-magnitude correlation framework.
 
-**Feasibility self-rating (1–5):** *[for Jason to fill]*
+**Feasibility self-rating (1–5):** **3** — confident the MVV (8 concepts, A vs C only, 60 test passages, no steering) lands; less confident the full 3-condition × 12-concept design plus causal validation completes inside three weeks without slippage.
 
-**Open to collaborators?** *[for Jason to fill]*
+**Open to collaborators?** **Maybe** — see Section D5 below for the specifics (a labelling collaborator would let me push test set to 15/concept and add the steering stretch with confidence).
 
 ### Idea 2
 
@@ -43,9 +43,9 @@ Three-condition controlled experiment on twelve concepts from SUMO's `Intentiona
 
 **Project title:** Knowing the Graph: Does Relational Structure Improve Probe-Based Detection of Closely-Related Safety Concepts?
 
-**Solo or group?** *[for Jason to fill — noting the v2 proposal flags this as an open question; scope is feasible solo and comfortable for a pair]*
+**Solo or group?** **Solo (working default)** — will post in #projects-help looking for a labelling-focused collaborator (~3 days, 50-50 authorship). If no taker by end of Week 8, proceed solo with the test set cut to 80 passages.
 
-**Group members (if any):** *[for Jason to fill]*
+**Group members (if any):** None at present (see above).
 
 **PROBLEM (catastrophic AI risk):**
 Concept-level monitoring of model internals is a frontline defence against deceptive and manipulative AI behaviour. Current concept probes routinely confuse closely-related safety concepts — deception, manipulation, persuasion, coercion all live in overlapping subspaces. If monitors can't discriminate within these families, they will systematically fail to detect the very behaviours they exist to catch, undermining human oversight of agentic systems.
@@ -85,9 +85,21 @@ Three-condition controlled experiment. All conditions use Anthropic's pipeline (
 
 | Target date | Milestone |
 |---|---|
-| **Week 12 — Saturday May 30 EoD** | All training data generated (synthetic stories for A, hard-negative sampling for B, boundary articulations for C). Conditions A and B probes trained for all 12 concepts. First ~60 test passages hand-labelled. Sanity check: Condition A probes recover Anthropic-style emotion-concept results on a small validation slice. |
-| **Week 13 — Saturday June 6 EoD** | Condition C probes trained. Full 120-passage test set complete. Per-pair AUC computed for all three conditions. Paired bootstrap analysis run. Causal validation (probe-target × steering-magnitude) computed. Decision made on whether to extend to steering stretch. |
+| **Week 12 — Saturday May 30 EoD** | All training data generated (synthetic stories for A, hard-negative sampling for B, boundary articulations for C). Conditions A and B probes trained for all 12 concepts. First **~30** test passages hand-labelled. Sanity check: Condition A probes recover Anthropic-style emotion-concept results on a small validation slice. |
+| **Week 13 — Saturday June 6 EoD** | Condition C probes trained. **Remaining ~90 test passages hand-labelled** (full 120-passage test set complete). Per-pair AUC computed for all three conditions. Paired bootstrap analysis run. Causal validation (probe-target × steering-magnitude) computed. Decision made on whether to extend to steering stretch. |
 | **Week 14 — Friday June 13 EoD** | Write-up complete (4–6 pages, LessWrong-publishable). Slides finalised for Saturday presentation. Notebook polished and reproducible. (Optional: steering stretch results, if pursued.) |
+
+**Minimum Viable Version (fallback if behind schedule by mid-Week 13):**
+
+If by mid-Week 13 the full design is not on track, fall back to:
+
+- **8 concepts** instead of 12 (drop coercion, framing, equivocation, omission)
+- **Conditions A and C only** (skip B, the hard-negative-only control)
+- **60 test passages** (5 per concept × 8 + 20 ambiguous)
+- **No steering stretch**
+- **Simpler statistics:** report effect sizes with bootstrap CIs only; skip pairwise significance testing across all pairs
+
+This MVV is achievable in ~10 days even with significant debugging, and still produces a publishable A-vs-C result on the headline question. The B-vs-C comparison (which would isolate ontological structure from hard-negative mining alone) is sacrificed; the write-up would explicitly flag this as the remaining open question.
 
 **Success Criteria (specific, measurable):**
 
@@ -126,5 +138,6 @@ The full reasoning behind this proposal is documented in:
 - **`project/capstone/capstone_proposal_v2.md`** — Full proposal (this scoping template's parent document).
 - **`project/notes/capstone_proposal_review.md`** — Deep-read critique of v1 that produced the v2 design.
 - **`project/notes/emotions_paper_review.md`** — Deep-read of Anthropic's *Emotion Concepts* paper, the methodological baseline.
-- **`project/archive/capstone_proposal_v1.md`** *(if archived)* — Original v1 proposal, superseded.
-- **`project/archive/capstone_proposals.md`** *(if archived)* — Three earlier directions (P1/P2/P3), superseded by the v1 → v2 line.
+- **`project/archive/capstone_proposal_v1.docx`** — Original v1 proposal, superseded.
+- **`project/archive/capstone_proposals_three_directions.md`** — Three earlier directions (P1/P2/P3), superseded by the v1 → v2 line.
+- **`project/notes/template_grading_review.md`** — TA-voice grading of an earlier draft of this scoping document.
