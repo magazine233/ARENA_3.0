@@ -1,0 +1,141 @@
+"""Render the bespoke slide visuals for TALK_8MIN.pptx -> paper/slides/assets/.
+
+Run from project/capstone/:  python paper/slides/render_slide_assets.py
+Then build the deck:         python paper/slides/build_deck.py
+
+Three assets (the rest of the deck reuses iteration4_scaling/figures/):
+  slide2_graph.png    - the curated SET G graph, clusters coloured, hub emphasised
+  slide4_timeline.png - iter-1 noise-positive (struck) -> iter-2 powered pre-registered NULL
+  slide7_cartoon.png  - boundary-coverage picture: near negative places the tested facet,
+                        far constraint touches a different facet
+"""
+import json
+import textwrap
+from pathlib import Path
+
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import networkx as nx
+
+ASSETS = Path("paper/slides/assets")
+ASSETS.mkdir(parents=True, exist_ok=True)
+CLUSTER_COLORS = {
+    "influence_and_information_integrity": "#4C72B0",
+    "deception_tactics_and_processes": "#C44E52",
+    "approval_and_deference": "#55A868",
+    "coercive_pressure": "#8172B2",
+    "synthetic_media_and_falsehood": "#CCB974",
+}
+
+
+def wrap_label(name: str) -> str:
+    # CamelCase -> spaced, wrapped for node labels
+    out = "".join((" " + ch if ch.isupper() else ch) for ch in name).strip()
+    return "\n".join(textwrap.wrap(out, 14))
+
+
+def slide2_graph():
+    g = json.loads(Path("pivot/graph_contrastive_boundary_set.json").read_text(encoding="utf-8"))
+    G = nx.Graph()
+    cluster = {c["id"]: c["cluster"] for c in g["concepts"]}
+    G.add_nodes_from(cluster)
+    G.add_edges_from((e["a"], e["b"]) for e in g["edges"])
+    pos = nx.kamada_kawai_layout(G)
+    pos = nx.spring_layout(G, pos=pos, seed=7, k=1.8, iterations=80)
+
+    fig, ax = plt.subplots(figsize=(9, 6.2))
+    nx.draw_networkx_edges(G, pos, ax=ax, edge_color="#999999", width=1.2, alpha=0.7)
+    hub = "ManipulativeCommunication"
+    sizes = [2600 if n == hub else 1500 for n in G]
+    colors = [CLUSTER_COLORS[cluster[n]] for n in G]
+    nx.draw_networkx_nodes(G, pos, ax=ax, node_size=sizes, node_color=colors,
+                           edgecolors=["black" if n == hub else "white" for n in G],
+                           linewidths=[2.5 if n == hub else 1.0 for n in G], alpha=0.95)
+    nx.draw_networkx_labels(G, pos, ax=ax, labels={n: wrap_label(n) for n in G},
+                            font_size=7, font_weight="bold")
+    # place the hub annotation pointing AWAY from the graph centroid to avoid collisions
+    import numpy as np
+    centre = np.mean(list(pos.values()), axis=0)
+    away = np.array(pos[hub]) - centre
+    away = away / (np.linalg.norm(away) + 1e-9)
+    txt_xy = np.array(pos[hub]) + away * 0.45 + np.array([0, 0.12])
+    ax.annotate("the hub\n(degree 7)", pos[hub], xytext=txt_xy,
+                fontsize=10, fontstyle="italic", ha="center",
+                arrowprops=dict(arrowstyle="->", color="black", lw=1.2))
+    ax.set_title("SET G: 15 AI-safety concepts, 26 curated edges (colour = concept family)",
+                 fontsize=12)
+    ax.axis("off")
+    fig.tight_layout()
+    fig.savefig(ASSETS / "slide2_graph.png", dpi=200)
+    plt.close(fig)
+
+
+def slide4_timeline():
+    fig, ax = plt.subplots(figsize=(9, 3.4))
+    ax.axhline(0.5, color="#bbbbbb", lw=2, zorder=0)
+    boxes = [
+        (0.16, "ITERATION 1", '"positive!"', "#C44E52",
+         "killed by adversarial verification:\nnoise artifact + wrong question\n(relations as extra positives)", True),
+        (0.62, "ITERATION 2 (R4)", "powered, pre-registered", "#4C72B0",
+         "105 matched pairs, rule locked first\npartial Spearman − 0.125  ≈  NULL\n(rank corr. of connectivity vs probe benefit,\ncontrolling for confounds — ≈ zero)", False),
+    ]
+    for x, title, sub, color, body, strike in boxes:
+        ax.scatter([x], [0.5], s=220, color=color, zorder=3)
+        ax.text(x, 0.80, title, ha="center", fontsize=13, fontweight="bold", color=color)
+        t = ax.text(x, 0.68, sub, ha="center", fontsize=11, fontstyle="italic")
+        if strike:
+            t.set_bbox(dict(boxstyle="round,pad=0.25", fc="white", ec=color))
+            ax.plot([x - 0.07, x + 0.07], [0.685, 0.685], color=color, lw=2)
+        ax.text(x, 0.30, body, ha="center", va="top", fontsize=9.5)
+    ax.annotate("", xy=(0.52, 0.5), xytext=(0.26, 0.5),
+                arrowprops=dict(arrowstyle="->", lw=2, color="#555555"))
+    ax.text(0.39, 0.555, "fix validity + power,\nlock the rule BEFORE the run", ha="center", fontsize=9)
+    ax.set_xlim(0, 1)
+    ax.set_ylim(0, 1)
+    ax.axis("off")
+    fig.tight_layout()
+    fig.savefig(ASSETS / "slide4_timeline.png", dpi=200)
+    plt.close(fig)
+
+
+def slide7_cartoon():
+    import numpy as np
+    rng = np.random.default_rng(3)
+    fig, ax = plt.subplots(figsize=(9, 5))
+    a = rng.normal([0, 0], 0.55, (90, 2))
+    ax.scatter(*a.T, s=14, color="#4C72B0", alpha=0.55, label="concept A (positives)")
+    ax.scatter([0], [0], marker="*", s=420, color="#1a3a6b", zorder=5)
+    ax.text(0.04, 0.12, "centroid\n(positives sharpen this)", fontsize=10, color="#1a3a6b")
+    circ = plt.Circle((0, 0), 1.55, fill=False, color="#333333", lw=2, ls="-")
+    ax.add_patch(circ)
+    b = rng.normal([2.5, 0.4], 0.38, (45, 2))
+    ax.scatter(*b.T, s=14, color="#C44E52", alpha=0.7, label="sibling B (near negative)")
+    ax.annotate("", xy=(1.30, 0.21), xytext=(2.0, 0.33),
+                arrowprops=dict(arrowstyle="-|>", lw=3, color="#C44E52"))
+    ax.text(1.62, 0.62, "near negative\nplaces THIS facet\n(+0.06)", fontsize=11,
+            color="#C44E52", fontweight="bold", ha="center")
+    c = rng.normal([-2.2, -1.7], 0.33, (35, 2))
+    ax.scatter(*c.T, s=14, color="#999999", alpha=0.7, label="distant relative C")
+    ax.annotate("", xy=(-1.06, -0.82), xytext=(-1.78, -1.38),
+                arrowprops=dict(arrowstyle="-|>", lw=3, color="#999999", ls=":"))
+    ax.text(-2.25, -0.78, "far constraint touches\na DIFFERENT facet\n(held-out-edge ≈ 0)",
+            fontsize=11, color="#777777", ha="center")
+    ax.text(0, -2.35,
+            'Positives sharpen the centroid; INDEPENDENT negatives place the boundary facets.\n'
+            'Our graph’s "alternate paths" all route through one hub — correlated, not independent.',
+            ha="center", fontsize=11.5, fontweight="bold")
+    ax.set_xlim(-3.6, 3.6)
+    ax.set_ylim(-2.8, 1.9)
+    ax.axis("off")
+    ax.legend(loc="upper left", fontsize=9, frameon=False)
+    fig.tight_layout()
+    fig.savefig(ASSETS / "slide7_cartoon.png", dpi=200)
+    plt.close(fig)
+
+
+if __name__ == "__main__":
+    slide2_graph()
+    slide4_timeline()
+    slide7_cartoon()
+    print(f"rendered 3 assets -> {ASSETS}")
