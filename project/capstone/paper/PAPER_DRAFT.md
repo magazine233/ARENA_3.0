@@ -1,6 +1,8 @@
 # Knowing the Graph: Does Relational Structure Improve Linear-Probe Detection of Related AI-Safety Concepts?
 
-*Jason Boudville (lead), with p0ss (HatCat). — DRAFT SCAFFOLD assembled 2026-06-11, before iteration-4 lands.
+*Jason Boudville. — DRAFT SCAFFOLD assembled 2026-06-11, before iteration-4 lands. (Collaborator kept unnamed
+throughout per their silent-helper preference — their work is credited generically as "our collaborator"; see
+Acknowledgements. Confirm with them before submission: named, pseudonymous, or as-is.)
 Everything except §5.4 is determined by completed work; §5.4 has both pre-written outcome variants (legitimate
 because the decision rule is locked in `../iteration4_scaling/PREREGISTRATION.md` §3 — we fill in the verdict, we
 don't choose it). Numbers verified against the result artifacts named in `PAPER_OUTLINE.md`. Jason: every section
@@ -13,8 +15,8 @@ is yours to rewrite in your voice — the scaffold gets the structure, numbers, 
 Concept-detection probes are a core interpretability tool, and AI-safety concept sets are naturally *relational* —
 manipulation, deception, and sycophancy form a graph of siblings, parents, and hubs, not a list of independents. We
 test whether knowing that graph improves linear-probe detection of 15 related AI-safety concepts in the residual
-stream of Gemma-2-9B (replicated on Gemma-4-E4B). Across four pre-registered iterations and a two-team
-collaboration we find a consistent, bounded answer. (1) Relational structure helps **only as local hard-negative
+stream of Gemma-2-9B (replicated on Gemma-4-E4B). Across four iterations — every powered run pre-registered after
+the first — with independent replication of every key result, we find a consistent, bounded answer. (1) Relational structure helps **only as local hard-negative
 contrast**: training a concept's probe with its directly-related siblings as negatives improves discrimination by
 ~+0.06 F1, replicated across both models and both codebases — but roughly one third of that effect is shared
 vocabulary, not deep structure. (2) The graph's *connectivity* shows no usable signal in the completed
@@ -36,21 +38,21 @@ measured off-graph gap, where they cut false positives by 20 points.
 - **Why relational concept sets matter for safety probing.** Deployable monitoring wants per-concept lenses over
   families of related behaviours (the SET G manipulation/deception/influence family). The naive hope: relational
   knowledge (an ontology/graph) should make probes better — more data per boundary, structure to generalise along.
-- **The specific hypothesis we inherited (HatCat).** Relationship-aware training improves discrimination, and the
+- **The specific hypothesis we inherited.** Relationship-aware training improves discrimination, and the
   benefit scales with graph *connectivity* (Menger / vertex-disjoint alternate paths) — if A and B are connected by
   many independent paths, a probe should triangulate their boundary even without direct A-vs-B data.
 - **What we did.** Four iterations; after iteration 1's false positive, every powered run was pre-registered
   before execution, with adversarial verification of every positive result; an independent replication and
-  extension by the hypothesis's originating team (p0ss, HatCat) on a second model. The result is a *bounded* claim
-  with an explanatory model, not a yes/no.
+  extension by a collaborating researcher — the hypothesis's originator — on a second model. The result is a
+  *bounded* claim with an explanatory model, not a yes/no.
 - **Contributions** (foregrounding what the process earned):
   1. A valid, powered, pre-registered test of the relational hypothesis — fixing iteration-1's validity and power
      errors rather than publishing them.
   2. The controls that bound the surviving effect — vocabulary regression (~⅓ lexical), placebo-graph permutation
-     (declared graph is special, p=0.002) — and the pre-registered scaling sweep of p0ss's held-out-edge condition
+     (declared graph is special, p=0.002) — and the pre-registered scaling sweep of the collaborator's held-out-edge condition
      (the test that isolates connectivity from adjacency).
-  3. Cross-model, cross-team convergence: Gemma-2-9B (ours) and Gemma-4-E4B (p0ss), two codebases, same numbers to
-     two decimal places.
+  3. Cross-model convergence under independent replication: Gemma-2-9B (this work) and Gemma-4-E4B (our
+     collaborator), two codebases, same numbers to two decimal places.
   4. A reframing — from vertex connectivity to independent-constraint boundary coverage — that predicts the full
      pattern of results, plus its deployment corollary (the tiered-negatives recipe and the rejection scaffold).
 
@@ -65,7 +67,8 @@ measured off-graph gap, where they cut false positives by 20 points.
   regression one-vs-rest / pairwise probes; 30 seeds. Layer-18 choice later validated by a 42-layer sweep (§6.2).
 - **Menger framing.** Vertex connectivity k(A,B) = number of vertex-disjoint paths; the hypothesis predicts probe
   benefit increases with k.
-- **Collaboration & discipline.** Jason leads iterations + paper; p0ss replicates/extends on E4B. Norms: pre-register
+- **Collaboration & discipline.** Jason leads the iterations and the paper; an independent collaborator replicates
+  and extends on E4B. Norms: pre-register
   before powered runs; adversarially verify positives; bound claims honestly. (Iteration 1's "positive" was a
   noise artifact caught exactly this way.)
 
@@ -79,17 +82,17 @@ measured off-graph gap, where they cut false positives by 20 points.
   run; the null is reported as a result, not buried.
 - Takeaway carried forward: if relational structure matters, it isn't via *more positive data along the graph*.
 
-## 4. The reframe: relations as hard negatives (p0ss), and iteration 3 / Path 2
+## 4. The reframe: relations as hard negatives, and iteration 3 / Path 2
 
-- **p0ss's diagnosis.** The capstone operationalised "knowing the relations" as extra *positives*; HatCat's actual
-  mechanism uses related concepts as *hard negatives* — contrast, not coverage.
+- **The collaborator's diagnosis.** The capstone operationalised "knowing the relations" as extra *positives*; the
+  hypothesis's actual mechanism uses related concepts as *hard negatives* — contrast, not coverage.
 - **Iteration 3 / Path 2 (pre-registered, Gemma-2-9B).** Declared siblings ARE more confusable than non-siblings —
   placebo-graph permutation p=0.002 (the curated graph is special, not an artifact of having *a* graph); clean
   primary effect **+0.055 F1** (Experiment A, the sibling-vs-random confusability gap; the in-distribution
   training-benefit variant is larger but inflated); vocabulary regression attributes **~⅓** of the effect to
   lexical overlap (an upper bound on the lexical share — the regression over-controls, since vocabulary partly
   mediates relatedness); the graph-beyond-vocabulary residual is positive but marginal.
-- **Cross-model convergence.** p0ss's graph-contrastive test on E4B (his design and first run, 30 seeds):
+- **Cross-model convergence.** Our collaborator's graph-contrastive test on E4B (their design and first run, 30 seeds):
   direct-neighbour negatives **+0.057**, graph-aware mixed **+0.043**, held-out-edge **+0.008**. Our Gemma-2-9B
   baseline at 14/context reproduces it: **+0.059 / +0.039 / +0.012**. Same pattern, two models, two codebases.
 
@@ -105,7 +108,7 @@ the *other* relationships should partially reconstruct the withheld boundary.
 Direct ~+0.06, mixed ~+0.04, held-out-edge ~+0.01 (both models, Section 4 numbers). The benefit ordering follows
 proximity to the tested boundary, not path count.
 
-### 5.3 Robustness (p0ss extensions)
+### 5.3 Robustness (collaborator's extensions)
 - **Layer sweep:** the deltas reproduce at layers 8/18/24/42; discrimination is near-ceiling at *every* layer
   (lexical separability from the embedding layer up); held-out-edge is dead at every depth. Layer 18 is
   representative, not cherry-picked.
@@ -120,7 +123,7 @@ Pre-registered (LOCKED 2026-06-10): Gemma-2-9B, volumes {7, 14, 28, 56, 70}/cont
 **[VARIANT A — NULL (the strong prior):]** The held-out-edge delta stays ≈0 across the full sweep
 ([NUMBERS: per-volume deltas; top-volume mean, 95% CI, paired-t and Wilcoxon p across the 52 directed edges]).
 With ~10× the original data volume and a within-model design, the alternate-path / Menger prediction is refuted at
-adequate power: relational benefit is local direct-neighbour contrast only. This converges with p0ss's independent
+adequate power: relational benefit is local direct-neighbour contrast only. This converges with the independent
 4× E4B result and completes the arc opened by the iteration-2 null — the two nulls and the bounded positive are one
 consistent picture under §6.1's model.
 
@@ -143,7 +146,7 @@ include the **minimum detectable effect at top volume**, so "refuted at adequate
 
 ## 6. Why: from vertex connectivity to independent-constraint boundary coverage
 
-### 6.1 The model (p0ss, REPLICATION_WRITEUP §6)
+### 6.1 The model (our collaborator's; REPLICATION_WRITEUP §6)
 A concept = centroid + class-conditional distribution; the probe's decision boundary sits at the tail-off.
 **Positives sharpen the centroid; independent negatives place boundary facets.** This predicts: extra positives do
 nothing once the centroid saturates (iterations 1–2 null); sibling negatives move the boundary (+0.06, iteration 3);
@@ -151,14 +154,14 @@ benefit ordering = proximity to the tested facet (direct > mixed > held-out); an
 SET G's nominally disjoint alternate paths route through the ManipulativeCommunication hub — correlated, not
 independent, constraints. **k counts only insofar as it counts independent constraints.**
 
-### 6.2 The geometry is consistent (with an anisotropy correction) [p0ss]
+### 6.2 The geometry is consistent (with an anisotropy correction) [collaborator]
 Raw cosine said "everything overlaps" (adjacent 0.971 vs non-adjacent 0.961) — an anisotropy artifact (random
 passage pairs sit at ~0.89). Mean-centred: adjacent pairs separate (+0.166), far-domain controls sit clearly
 outside (−0.147), but *graded* graph distance still doesn't track representation (r ≈ −0.30 at layer 18; −0.27 to
 −0.40 across all 42 layers). The geometry independently reproduces the probe story: local adjacency real, multi-hop
 structure absent. Probe results are unaffected (a linear classifier factors out the common direction).
 
-### 6.3 Generation mode is a non-factor (Path 3 first run) [p0ss]
+### 6.3 Generation mode is a non-factor (Path 3 first run) [collaborator]
 True autoregressive states vs teacher-forced re-reads: graduation pass rates 0.692 vs 0.693 (causal equivalence);
 the read-own gap (0.454) is prompt-grounding, not a generation effect. The contrast-*prompted* generation variant
 ("write A in a way that is not B") remains untested — flagged as future work, since Path 2 shows the
@@ -166,8 +169,8 @@ contrast-as-negative mechanism is the one that works.
 
 ## 7. The deployment payoff: rejection scaffolds and tiered negatives
 
-*(The two-level probe, multi-scale negatives, and confuser-coverage results in the first three bullets are p0ss's
-extensions; the near-OOS control set in the last bullet is this work.)*
+*(The two-level probe, multi-scale negatives, and confuser-coverage results in the first three bullets are our
+collaborator's extensions; the near-OOS control set in the last bullet is this work.)*
 
 - **The flat probe's real failure is missing rejection, not resolution.** A 15-way argmax assigns 100% of
   far-domain inputs to *some* concept; a confidence threshold rejects only 26% of them. A coarse OTHER class
@@ -192,7 +195,7 @@ extensions; the near-OOS control set in the last bullet is this work.)*
 ## 8. Synthesis & conclusion
 
 Relational structure, for safety probing, is worth exactly this much: **direct relations make the best cheap hard
-negatives** (+0.06, ~⅓ lexical, two models, two teams) — **[ITER-4 SLOT — NULL: "and nothing more flows through
+negatives** (+0.06, ~⅓ lexical, two models, independently replicated) — **[ITER-4 SLOT — NULL: "and nothing more flows through
 *this graph's* connectivity at any volume we tested" / CONFIRM: "and connectivity carries additional,
 volume-unlocked signal — revising §6.1's independence claim"]**. The deeper role of relationships is not
 classification at all: under the
@@ -207,8 +210,15 @@ rules); F1 as the pre-registered primary metric throughout (balanced accuracy an
 every table; AUC is the most ceiling-compressed);
 out-of-distribution evaluation via held-out contexts; controls: count-matched negatives, placebo-graph permutation,
 vocabulary regression, held-out-edge isolation, anisotropy-corrected geometry; adversarial verification of every
-positive (multi-agent refutation passes; iteration 1's noise-positive caught this way); cross-model + cross-team
+positive (multi-agent refutation passes; iteration 1's noise-positive caught this way); cross-model independent
 replication; all data, code, and result JSONs committed with provenance.
+
+## Acknowledgements
+
+[PLACEHOLDER — confirm with the collaborator before submission.] We thank our collaborator for the hard-negative
+reframe, the independent E4B replication, the layer/anisotropy/two-level/multi-scale extensions, and the
+boundary-coverage model — credited generically throughout at their preference. The shared repository records the
+full provenance of each result.
 
 ## 10. Limitations & future work
 
