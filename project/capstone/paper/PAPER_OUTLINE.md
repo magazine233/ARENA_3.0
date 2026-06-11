@@ -1,5 +1,10 @@
 # Paper outline (deliverable) — assembled here at the end
 
+*Status 2026-06-11: the scaffold now exists — [`PAPER_DRAFT.md`](PAPER_DRAFT.md) (full draft, iteration-4 verdict
+slotted with pre-written variants) and [`slides/TALK_8MIN.md`](slides/TALK_8MIN.md) (8-min talk, slide-by-slide).
+Both adversarially verified (numbers audited against source artifacts; claims red-teamed). This outline remains the
+source map.*
+
 *Working title: "Knowing the Graph: Does Relational Structure Improve Linear-Probe Detection of Related AI-Safety
 Concepts?" — Jason Boudville (lead), with p0ss. This `paper/` folder is the **deliverable** (proper write-up +
 slides); it **synthesises** the iterations rather than duplicating their process docs. Build it near the end; until
