@@ -19,8 +19,8 @@ parts of the answer that are "no."
 The hypothesis in one sentence: *"Probes for related concepts should help each other — and the benefit should scale
 with connectivity (alternate paths)."*
 **SAY:** Safety monitoring wants per-concept detectors — lenses — over families of related behaviours. These
-concepts aren't independent: manipulation, deception, sycophancy form a graph. The hypothesis we inherited from a
-collaborating interpretability project: relationship-aware training improves detection, and if two concepts are connected by many independent
+concepts aren't independent: manipulation, deception, sycophancy form a graph. The hypothesis we inherited — later
+peer-replicated on a second model: relationship-aware training improves detection, and if two concepts are connected by many independent
 paths, you can triangulate their boundary even without direct data — like inferring a border from the neighbours'
 borders. Intuitive, testable, and if true, very useful: graphs are cheap, data is not.
 
@@ -45,9 +45,9 @@ gets *explained* in two slides.
 ## 5. Act 2 — the reframe that worked (1:15)
 **SHOW:** Table, two models side-by-side (ΔF1 vs random negatives):
 direct neighbours **+0.057 / +0.059**, graph-aware mixed +0.043 / +0.039, held-out-edge +0.008 / +0.012
-(E4B = independent replication, Gemma-2-9B = this work). Separate labelled box — *"Path-2 controls (Gemma-2-9B):"*
+(E4B = peer replication, Gemma-2-9B = this work). Separate labelled box — *"Path-2 controls (Gemma-2-9B):"*
 placebo-graph p=0.002; "~⅓ of the effect is vocabulary."
-**SAY:** Our collaborator's diagnosis: the mechanism isn't extra positives, it's *hard negatives* — train Manipulation's probe
+**SAY:** The peer replication's diagnosis: the mechanism isn't extra positives, it's *hard negatives* — train Manipulation's probe
 with its actual siblings as the negative class. That works: +0.06 F1, and the declared graph beats shuffled placebo
 graphs at p=0.002 — the curated edges are real confusability structure, not just "any graph." Two honest bounds:
 about a third of the effect is shared vocabulary, and — see the right column — the effect lives entirely in
@@ -111,5 +111,5 @@ Thanks — questions.
 - Likely Q&A: "is +0.06 even meaningful?" (it's ~the whole remaining headroom at a 0.93 ceiling; and the
   FPR-at-operating-point analysis is where deployment value shows) · "does this generalise beyond SET G?" (single
   family — honest limitation, §10 of the paper) · "why linear probes?" (deployment-realistic; MLP spot-checks
-  matched) · "who ran the second model?" (an experienced collaborator who prefers to stay behind the scenes; the
-  shared repo records full provenance — be straightforwardly honest here, just don't volunteer the name).
+  matched) · "who ran the second model?" (a peer replication by an experienced researcher who asked to be credited
+  exactly that way; the shared repo records full provenance — be straightforwardly honest, don't volunteer the name).

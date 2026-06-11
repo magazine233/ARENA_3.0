@@ -6,8 +6,8 @@ Both adversarially verified (numbers audited against source artifacts; claims re
 source map.*
 
 *Working title: "Knowing the Graph: Does Relational Structure Improve Linear-Probe Detection of Related AI-Safety
-Concepts?" — Jason Boudville. (Collaborator unnamed in the deliverables at their silent-helper preference — work
-credited generically as "our collaborator"; internal source-map references below keep real names.) This `paper/`
+Concepts?" — Jason Boudville. (Second-model work credited as "peer replication" in the deliverables — the
+crediting they requested, confirmed 2026-06-12; internal source-map references below keep real names.) This `paper/`
 folder is the **deliverable** (proper write-up +
 slides); it **synthesises** the iterations rather than duplicating their process docs. Build it near the end; until
 then this is the skeleton + source map.*

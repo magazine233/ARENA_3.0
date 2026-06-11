@@ -129,8 +129,8 @@ bullets(s, [
 ], left=8.9, top=1.8, width=4.1, height=4.5)
 notes(s, "Safety monitoring wants per-concept detectors — lenses — over families of related "
          "behaviours. These concepts aren't independent: manipulation, deception, sycophancy "
-         "form a graph. The hypothesis we inherited from a collaborating interpretability "
-         "project: relationship-aware training improves detection, and if two concepts are "
+         "form a graph. The hypothesis we inherited — later peer-replicated on a second "
+         "model: relationship-aware training improves detection, and if two concepts are "
          "connected by many independent paths, you can triangulate their boundary even without "
          "direct data. Intuitive, testable, and if true, very useful: graphs are cheap, data is "
          "not. (1:00)")
@@ -163,7 +163,7 @@ notes(s, "Iteration 1 looked positive — and died under adversarial verificatio
 # ---- 5. Act 2: the reframe ------------------------------------------------------
 s = slide("Act 2 — the reframe that worked: relations as hard negatives", "1:15")
 table(s, [
-    ["ΔF1 vs random negatives", "E4B (independent replication)", "Gemma-2-9B (this work)"],
+    ["ΔF1 vs random negatives", "E4B (peer replication)", "Gemma-2-9B (this work)"],
     ["direct-neighbour negatives", "+0.057", "+0.059"],
     ["graph-aware mixed", "+0.043", "+0.039"],
     ["held-out-edge (connectivity)", "+0.008", "+0.012"],
@@ -179,7 +179,7 @@ bullets(s, [
     ("Robust: two models, two codebases, fully independent runs — same numbers.", {"size": 16}),
     ("Honest bounds: ~⅓ lexical, and the effect lives entirely in DIRECT adjacency →", {"size": 16, "color": ACCENT}),
 ], left=0.7, top=4.3, width=12.0, height=2.4)
-notes(s, "Our collaborator's diagnosis: the mechanism isn't extra positives, it's hard "
+notes(s, "The peer replication's diagnosis: the mechanism isn't extra positives, it's hard "
          "negatives — train Manipulation's probe with its actual siblings as the negative "
          "class. That works: +0.06 F1, and the declared graph beats shuffled placebo graphs at "
          "p=0.002 — the curated edges are real confusability structure, not just 'any graph'. "
