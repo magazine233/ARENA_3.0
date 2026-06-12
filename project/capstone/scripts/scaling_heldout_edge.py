@@ -56,14 +56,21 @@ def run_one(n: int, n_seeds: int, probe: str) -> dict:
         shutil.rmtree(stage)
     stage_subsample(n, stage)
     out = Path(f"results/iteration4_scaling/sweep_n{n}.json")
-    # --include-rows persists per-(edge,context,seed) rows in sweep_n{n}.json — needed to
-    # run the pre-registered "paired test across edges" at the top volume (PREREGISTRATION §3)
+    # --include-rows captures per-(edge,context,seed) rows — needed for the pre-registered
+    # "paired test across edges" at the top volume (PREREGISTRATION §3). The rows are then
+    # SPLIT into a gitignored sweep_n{n}_rows.json (50+ MB each; regenerable) so the
+    # committed summary JSON stays small.
     subprocess.run([sys.executable, SCRIPT, "--capstone", str(stage), "--activations", str(stage),
                     "--graph", GRAPH, "--out", str(out), "--n-seeds", str(n_seeds), "--probe", probe,
                     "--include-rows"],
                    check=True)
     shutil.rmtree(stage, ignore_errors=True)
-    bc = json.loads(out.read_text(encoding="utf-8"))["summary"]["by_condition"]
+    full = json.loads(out.read_text(encoding="utf-8"))
+    rows = full.pop("rows", None)
+    if rows is not None:
+        out.with_name(f"sweep_n{n}_rows.json").write_text(json.dumps(rows), encoding="utf-8")
+        out.write_text(json.dumps(full, indent=2), encoding="utf-8")
+    bc = full["summary"]["by_condition"]
     base = bc["random_non_graph"]["f1"]["mean"]
     return {k: bc[k]["f1"]["mean"] - base for k in CONDS}
 
