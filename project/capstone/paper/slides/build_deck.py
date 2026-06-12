@@ -201,23 +201,24 @@ else:
 bullets(s, [
     ("held-out-edge = train with all graph-aware negatives EXCEPT the tested sibling", {"size": 15}),
     ("If alternate paths carry signal, they should reconstruct the withheld boundary", {"size": 15}),
-    ("They don't: ≈ +0.01", {"bold": True, "size": 18, "color": ACCENT}),
-    ("[ITER-4 VERDICT HERE after the sweep]", {"size": 15, "color": ORANGE, "bold": True}),
-    ("E4B points = independent corroboration; headline trend is within-model (Gemma-2-9B)",
+    ("They don't — at any volume:", {"bold": True, "size": 17, "color": ACCENT}),
+    ("10× sweep: top volume +0.005, 95% CI [−0.005, +0.014] — spans zero", {"size": 15, "bold": True}),
+    ("Power shown: could detect 0.014; the direct effect is 3× that", {"size": 15}),
+    ("VERDICT: pre-registered NULL", {"size": 17, "bold": True, "color": ACCENT}),
+    ("E4B points = peer-replication corroboration; headline trend is within-model (Gemma-2-9B)",
      {"size": 12, "italic": True, "color": GREY}),
-], left=9.5, top=1.7, width=3.5, height=5.0)
+], left=9.5, top=1.7, width=3.5, height=5.2)
 notes(s, "The clean test of CONNECTIVITY — as opposed to adjacency — is the held-out-edge "
          "condition: train with all graph-aware negatives EXCEPT the sibling you're tested "
          "against. If alternate paths carry signal, they should partially reconstruct that "
          "withheld boundary. They don't: about +0.01.\n\n"
-         "[NULL FILL: And the obvious rebuttal — 'you just need more data' — is what iteration "
-         "4 killed: we scaled to 10x under a locked pre-registration, and the line stays flat. "
-         "Say aloud only the top-volume mean and CI; per-volume numbers and p-values live on "
-         "the slide. Within-model, pre-registered, minimum detectable effect reported: the "
-         "alternate-path prediction is refuted with shown — not asserted — power.]\n\n"
-         "[CONFIRM FILL: And iteration 4 surprised us: at 10x volume the held-out-edge delta "
-         "rises — numbers — connectivity was power-limited, and the next question is WHICH "
-         "edges recovered signal.] (1:15)")
+         "And the obvious rebuttal — 'you just need more data' — is what iteration 4 killed: "
+         "we scaled to 10x under a locked pre-registration, and the line stays flat — at the "
+         "top volume it's +0.005 with a confidence interval spanning zero. Say only that "
+         "aloud; per-volume numbers and p-values live on the slide. And the power is shown, "
+         "not asserted: the design could detect 0.014, and the direct effect — three times "
+         "that size — shows the instrument works. Within-model, pre-registered: the "
+         "alternate-path prediction is refuted. (1:15)")
 
 # ---- 7. Why ----------------------------------------------------------------------
 s = slide("Why — the boundary-coverage picture", "0:35")
@@ -228,9 +229,9 @@ notes(s, "One model predicts everything you've seen: a probe's boundary is set b
          "constraints face the wrong way, and in our graph the alternate paths all pass "
          "through the ManipulativeCommunication hub, so they're correlated. Menger counted "
          "paths; what matters is INDEPENDENT constraints.\n\n"
-         "[If iteration 4 CONFIRMS instead, close with: '—and iteration 4 showed this model "
-         "undersold independence: some alternate paths do carry signal at volume. Finding "
-         "which ones is the next sub-analysis.'] (0:35)")
+         "Bonus beat if time allows: the direct effect itself shrinks as data grows — +0.061 "
+         "at 7/context to +0.040 at 70 — so smart negatives matter most exactly when data is "
+         "scarce, which is the realistic regime for long-tail safety concepts. (0:35)")
 
 # ---- 8. So what -------------------------------------------------------------------
 s = slide("So what — you seal exactly the faces you train against", "1:00")

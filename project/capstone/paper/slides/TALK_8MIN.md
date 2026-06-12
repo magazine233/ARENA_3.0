@@ -60,13 +60,11 @@ within-model (Gemma-2-9B)."* fig7 inset if space (per-edge strip at top volume).
 **SAY:** The clean test of *connectivity* — as opposed to adjacency — is the held-out-edge condition: train with all
 graph-aware negatives EXCEPT the sibling you're tested against. If alternate paths carry signal, they should
 partially reconstruct that withheld boundary. They don't: ≈+0.01.
-**[FILL after iteration 4 — NULL variant:]** And the obvious rebuttal — "you just need more data" — is what
-iteration 4 killed: we scaled to 10× under a locked pre-registration, and the line stays flat. Say aloud only the
-top-volume mean and CI [from the verdict cell]; the per-volume numbers and p-values live on the slide. Within-model,
-pre-registered, and with the minimum detectable effect reported: the alternate-path prediction is refuted with
-shown — not asserted — power.
-**[FILL — CONFIRM variant:]** And iteration 4 surprised us: at 10× volume the held-out-edge delta rises —
-[numbers] — connectivity was power-limited, and the next question is *which* edges recovered signal.
+**[FILLED 2026-06-12 — NULL:]** And the obvious rebuttal — "you just need more data" — is what iteration 4 killed:
+we scaled to 10× under a locked pre-registration, and the line stays flat — at the top volume it's **+0.005 with a
+confidence interval spanning zero**. Say only that aloud; the per-volume numbers and p-values live on the slide.
+And the power is shown, not asserted: the design could detect 0.014, and the direct effect — three times that size
+— shows the instrument works. Within-model, pre-registered: the alternate-path prediction is refuted.
 
 ## 7. Why — the boundary-coverage picture (0:35)
 **SHOW:** Cartoon: a centroid with boundary facets; nearby negative pushes a facet (labelled "+0.06"); far
@@ -76,9 +74,9 @@ the facets. Our graph's 'alternate paths' all route through one hub — correlat
 Extra positives — nothing (iterations 1–2). Sibling negatives — the facet you're tested on (+0.06). Held-out-edge —
 the surviving constraints face the wrong way, and in our graph the alternate paths all pass through the
 ManipulativeCommunication hub, so they're correlated. Menger counted paths; what matters is *independent*
-constraints. **[If iteration 4 CONFIRMS instead, this slide's close becomes: "—and iteration 4 showed this model
-undersold independence: some alternate paths do carry signal at volume. Finding which ones is the next
-sub-analysis."]**
+constraints. *(Bonus beat if time allows: the direct effect itself shrinks as data grows — +0.061 at 7/context to
++0.040 at 70 — so smart negatives matter most exactly when data is scarce, which is the realistic regime for
+long-tail safety concepts.)*
 
 ## 8. So what — the deployment recipe (1:00)
 **SHOW:** The faces table (FPR@95%TPR — *gloss on slide: "false-positive rate at an operating point keeping 95% of
@@ -107,7 +105,7 @@ Thanks — questions.
   §7 in 20 seconds).
 - Numbers to say out loud (rounded, consistent): **+0.06** local effect, **~⅓** lexical, **≈+0.01** held-out-edge,
   **p=0.002** placebo, **20-point** FP cut. Everything else lives on the slides.
-- Rehearse the slide-6 fill BOTH ways until iteration 4 lands; the talk's spine works under either verdict.
+- Slide 6 is FINAL (NULL verdict, 2026-06-12): say "+0.005, CI spans zero, could detect 0.014" — three numbers, no more.
 - Likely Q&A: "is +0.06 even meaningful?" (it's ~the whole remaining headroom at a 0.93 ceiling; and the
   FPR-at-operating-point analysis is where deployment value shows) · "does this generalise beyond SET G?" (single
   family — honest limitation, §10 of the paper) · "why linear probes?" (deployment-realistic; MLP spot-checks

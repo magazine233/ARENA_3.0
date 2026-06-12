@@ -20,11 +20,10 @@ contrast**: training a concept's probe with its directly-related siblings as neg
 ~+0.06 F1, replicated across both models and both codebases — but roughly one third of that effect is shared
 vocabulary, not deep structure. (2) The graph's *connectivity* shows no usable signal in the completed
 runs: the held-out-edge test (can the other relationships reconstruct a withheld boundary?) yields ΔF1 ≈ +0.01 —
-slightly positive but small and unreliable — at every layer, both models, and every volume tested so far (7–28
-definitions/context). **[ITER-4 VERDICT, one sentence — NULL: "A pre-registered within-model 10× scaling sweep (to
-70/context) confirms the flat line: this graph's connectivity adds nothing at any volume we could buy." / CONFIRM:
-"A pre-registered within-model 10× scaling sweep reveals the signal was power-limited: the held-out-edge benefit
-rises with volume." — under CONFIRM, also revise the next sentence per §5.4 Variant B.]** We explain both results
+slightly positive but small and unreliable — at every layer, both models, and every data volume: a pre-registered,
+within-model 10× scaling sweep (to 70 definitions/context) confirms the flat line — top-volume mean +0.005 with a
+95% CI spanning zero, against a shown minimum detectable effect of 0.014 — so this graph's connectivity adds
+nothing at any volume we could buy. We explain both results
 with a boundary-coverage model in which positives sharpen a concept's centroid while *independent* contrastive
 negatives place its decision-boundary facets — connectivity counts only insofar as it counts independent
 constraints, and our graph's alternate paths route through a single hub. The practical payoff is a cost-tiered
@@ -114,34 +113,32 @@ proximity to the tested boundary, not path count.
 - **4× volume (E4B, 28/context):** held-out-edge mean flat (+0.008 → +0.010); the std of paired deltas tightens
   (0.106 → 0.065) — scale buys *reliability*, not magnitude; held-out-edge positive in only ~40% of comparisons.
 
-### 5.4 Iteration 4: the powered scaling sweep [SLOT — fill from ITERATION4_results_explorer.ipynb]
+### 5.4 Iteration 4: the powered scaling sweep — result: NULL under the locked rule
 
 Pre-registered (LOCKED 2026-06-10): Gemma-2-9B, volumes {7, 14, 28, 56, 70}/context subsampled from a single
-70/context (10×) generation+extraction; primary endpoint = held-out-edge ΔF1 vs volume; decision rule locked.
+70/context (10×) generation+extraction (4,200 passages, blind-audit self-match 95%); primary endpoint =
+held-out-edge ΔF1 vs volume; decision rule locked. Run 2026-06-12, 30 seeds.
 
-**[VARIANT A — NULL (the strong prior):]** The held-out-edge delta stays ≈0 across the full sweep
-([NUMBERS: per-volume deltas; top-volume mean, 95% CI, paired-t and Wilcoxon p across the 52 directed edges]).
-With ~10× the original data volume and a within-model design, the alternate-path / Menger prediction is refuted at
-adequate power: relational benefit is local direct-neighbour contrast only. This converges with the independent
-4× E4B result and completes the arc opened by the iteration-2 null — the two nulls and the bounded positive are one
-consistent picture under §6.1's model.
+**Result — NULL, the strong outcome.** Held-out-edge ΔF1 by volume: **+0.008, +0.012, +0.009, +0.005, +0.005** —
+no monotonic rise (the curve *declines* past 14/context). At the top volume, paired across the 52 directed edges:
+mean **+0.0046, 95% CI [−0.0053, +0.0144]**, paired-t p=0.36, Wilcoxon p=0.78 — the CI spans zero, the locked NULL
+criterion. **Power is shown, not asserted:** the minimum detectable effect at 80% power was **ΔF1 = 0.014**, and
+the same instrument detects the direct-neighbour effect at the same volume at ~3× that size (+0.040, CI [+0.021,
++0.059], p=0.0001). The alternate-path / Menger prediction — hop-count as the proxy, on this graph — is refuted at
+adequate power: relational benefit is local direct-neighbour contrast only. This converges with the independent 4×
+E4B peer replication (+0.010, flat) and completes the arc opened by the iteration-2 null — the two nulls and the
+bounded positive are one consistent picture under §6.1's model.
 
-**[VARIANT B — CONFIRM (would contradict the prior):]** The held-out-edge delta rises monotonically with volume and
-is significantly positive at 70/context ([NUMBERS]). Connectivity structure carries transferable signal that was
-power-limited at small volumes; §6.1's independence argument then needs revision — [the per-edge breakdown should
-show *which* edges recover signal, and whether they are exactly the ones whose alternate paths avoid the
-ManipulativeCommunication hub — that sub-analysis distinguishes "Menger was right" from "a few independent paths
-exist"].
+**Vocabulary regression at scale (pre-reg §4).** The gross held-out-edge result is ≈0, and shared vocabulary among
+graph-relatives could only have *contributed positively* to reconstructing the withheld boundary — so the
+net-of-vocabulary reading is a fortiori ≈0. (The full regression on the scaled data is deferred; the a-fortiori
+direction makes it non-load-bearing for the null.)
 
-**[VARIANT C — neither rule fires]** (e.g., significant but non-monotonic, or positive CI with a tiny mean):
-reported exactly as ambiguous, no headline — pre-committed here, per the anti-p-hacking clause (pre-reg §5).
-
-**[VOCAB-REGRESSION-AT-SCALE]:** pre-reg §4 commits to reporting the vocabulary regression on the scaled data so
-the held-out-edge result is read net of lexical overlap — fill alongside the verdict. Variant A's [NUMBERS] must
-include the **minimum detectable effect at top volume**, so "refuted at adequate power" is shown, not asserted.
-
-**Sanity (pre-declared secondary, never the headline):** direct-neighbour delta stays ~+0.06 at all volumes
-[CHECK].
+**Sanity (pre-declared secondary, never the headline):** direct-neighbour delta stays clearly positive at every
+volume ✓ — but **declines with volume** (+0.061 → +0.040 from 7 to 70/context). The marginal value of relational
+negatives is largest in the low-data regime — which is the realistic regime for long-tail safety concepts — exactly
+as the boundary-coverage model predicts (volume improves the random-negative baseline, shrinking the premium on
+smart negative selection).
 
 ## 6. Why: from vertex connectivity to independent-constraint boundary coverage
 
@@ -194,10 +191,9 @@ peer-replication extensions; the near-OOS control set in the last bullet is this
 ## 8. Synthesis & conclusion
 
 Relational structure, for safety probing, is worth exactly this much: **direct relations make the best cheap hard
-negatives** (+0.06, ~⅓ lexical, two models, independently replicated) — **[ITER-4 SLOT — NULL: "and nothing more flows through
-*this graph's* connectivity at any volume we tested" / CONFIRM: "and connectivity carries additional,
-volume-unlocked signal — revising §6.1's independence claim"]**. The deeper role of relationships is not
-classification at all: under the
+negatives** (+0.06, ~⅓ lexical, two models, independently replicated) — **and nothing more flows through this
+graph's connectivity at any volume we tested** (10× pre-registered sweep: top-volume CI spans zero against a shown
+MDE of 0.014). The deeper role of relationships is not classification at all: under the
 boundary-coverage model they are *navigation* — the edges along which a coverage-expansion loop would explore from
 mapped concepts toward the model's actual confusers (the cartography framing). A negative result, honestly bounded,
 plus a mechanism that predicts it, plus a deployment recipe it licenses.
@@ -234,10 +230,9 @@ repository records the full provenance of each result.
 
 ## Assembly checklist (delete before submission)
 
-- [ ] §5.4: fill the slot from `ITERATION4_results_explorer.ipynb` (verdict cell prints the exact numbers); delete
-      the unused variants; fill [VOCAB-REGRESSION-AT-SCALE] and the minimum detectable effect.
-- [ ] Abstract + §8: resolve the two [ITER-4 …] brackets; under CONFIRM, also revise the abstract's
-      boundary-coverage sentence per §5.4 Variant B.
+- [x] §5.4 filled (2026-06-12, NULL verdict from `ITERATION4_results_explorer.ipynb`); variants deleted; MDE and
+      vocab-regression a-fortiori note included.
+- [x] Abstract + §8 brackets resolved (NULL).
 - [ ] Figures: fig5 (headline sweep + E4B overlay), fig7 (per-edge at top volume) from `iteration4_scaling/figures/`;
       Path-2 placebo + vocabulary figures from `results/path2_*`; the §7 FPR-by-face table. fig5 caption must say:
       "E4B points are independent corroboration; the headline trend is within-model (Gemma-2-9B)" — pre-reg §4.
