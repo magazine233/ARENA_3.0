@@ -40,7 +40,14 @@ THEMES = {
                   header=RGBColor(0x33, 0x4E, 0x68), grey=RGBColor(0x62, 0x6E, 0x7B),
                   title_font="Segoe UI", body_font="Segoe UI", suffix="_slate"),
 }
-THEME = THEMES[sys.argv[1] if len(sys.argv) > 1 else "academic"]
+# Shipped variants (Jason's pick, 2026-06-12): warm + slate, for two audiences.
+# No-arg run builds both; pass a theme name (incl. the unshipped "academic") to build one.
+if len(sys.argv) < 2:
+    import subprocess
+    for t in ("warm", "slate"):
+        subprocess.run([sys.executable, __file__, t], check=True)
+    sys.exit(0)
+THEME = THEMES[sys.argv[1]]
 OUT = Path(f"paper/slides/TALK_10MIN_formal{THEME['suffix']}.pptx")
 
 DARK = THEME["ink"]

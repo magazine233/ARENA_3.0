@@ -3,8 +3,11 @@
 *Formal counterpart to `TALK_10MIN.md` (the spoken-voice cut). Same 11 slides, same figures, same numbers and
 claims; titles and speaker notes are in the **academic register of `PAPER_DRAFT.md`** (no direct address,
 contractions, or colloquial landings — phrasing pulled from the paper). Deliberately complete, as a **base to pare
-back**: trim for time/delivery to taste. Built by `build_deck_10min_formal.py` → `TALK_10MIN_formal.pptx`. The
-spoken-voice and 8-minute cuts remain available. Audience: TARA participants. ~9:35 + buffer.*
+back**: trim for time/delivery to taste. Built by `build_deck_10min_formal.py` → two shipped theme variants
+(Jason's pick, for two audiences): `TALK_10MIN_formal_warm.pptx` (off-white paper, Georgia titles,
+burgundy/deep-green) and `TALK_10MIN_formal_slate.pptx` (pale cool-grey, Segoe UI, navy). A no-arg run rebuilds
+both; the unshipped "academic" theme remains available via `... academic`. The spoken-voice and 8-minute cuts are in
+`archive/`. Audience: TARA participants. ~9:35 + buffer.*
 
 ---
 
