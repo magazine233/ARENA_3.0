@@ -3,8 +3,8 @@
 *Audience: TARA participants (they know probes, residual streams, logistic regression from ARENA — they don't know
 this project). 9 slides; per-slide budgets sum to 7:40, leaving 20s buffer. Each slide:
 **SHOW** (what's on screen) / **SAY** (speaker-note draft — rewrite in your voice; the beats are what matter).
-Slide 6 has the [ITER-4 SLOT]. Figures: `../../iteration4_scaling/figures/` (fig1–4 exist; fig5–7 export from
-`ITERATION4_results_explorer.ipynb` after STEP 3).*
+Slide 6 is FINAL (NULL verdict filled 2026-06-12). Figures: `../../iteration4_scaling/figures/` (fig1–7 all
+rendered; the deck uses fig5 as the headline).*
 
 ---
 
@@ -53,7 +53,7 @@ graphs at p=0.002 — the curated edges are real confusability structure, not ju
 about a third of the effect is shared vocabulary, and — see the right column — the effect lives entirely in
 *direct* adjacency. Same numbers, two models, two codebases, fully independent runs.
 
-## 6. Act 3 — connectivity isolated [ITER-4 SLOT] (1:15)
+## 6. Act 3 — connectivity isolated: the pre-registered NULL (1:15)
 **SHOW:** fig5 — the headline sweep: held-out-edge ΔF1 vs data volume {7,14,28,56,70}/context (red), direct (blue),
 with the independent E4B replication points overlaid hollow. Caption on slide: *"E4B = independent corroboration; the headline trend is
 within-model (Gemma-2-9B)."* fig7 inset if space (per-edge strip at top volume).
