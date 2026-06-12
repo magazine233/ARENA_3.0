@@ -8,8 +8,14 @@ untouched. Uses the formal geometry figure (slide9_anisotropy_formal.png).
 
 Layout helpers mirror the other builders (self-contained). Run from project/capstone/
 (after render_slide_assets.py, which now also emits the formal geometry figure):
-    python paper/slides/build_deck_10min_formal.py
+    python paper/slides/build_deck_10min_formal.py            # academic theme (default)
+    python paper/slides/build_deck_10min_formal.py warm       # -> TALK_10MIN_formal_warm.pptx
+    python paper/slides/build_deck_10min_formal.py slate      # -> TALK_10MIN_formal_slate.pptx
+
+Themes are all light (the figures are white-background PNGs; a dark theme would leave
+them floating as white cards). All variants import 1:1 into Google Slides, notes included.
 """
+import sys
 from pathlib import Path
 
 from pptx import Presentation
@@ -19,12 +25,35 @@ from pptx.enum.text import PP_ALIGN
 
 FIGS = Path("iteration4_scaling/figures")
 ASSETS = Path("paper/slides/assets")
-OUT = Path("paper/slides/TALK_10MIN_formal.pptx")
 
-DARK = RGBColor(0x1A, 0x1A, 0x2E)
-ACCENT = RGBColor(0xC4, 0x4E, 0x52)
-BLUE = RGBColor(0x4C, 0x72, 0xB0)
-GREY = RGBColor(0x66, 0x66, 0x66)
+THEMES = {
+    # bg=None -> default white, no fill set (cleanest import)
+    "academic": dict(bg=None, ink=RGBColor(0x1A, 0x1A, 0x2E), accent=RGBColor(0xC4, 0x4E, 0x52),
+                     header=RGBColor(0x4C, 0x72, 0xB0), grey=RGBColor(0x66, 0x66, 0x66),
+                     title_font=None, body_font=None, suffix=""),
+    # warm journal: off-white paper, serif titles, burgundy/deep-green
+    "warm": dict(bg=RGBColor(0xFB, 0xF8, 0xF2), ink=RGBColor(0x2B, 0x2B, 0x28), accent=RGBColor(0x8C, 0x2D, 0x2D),
+                 header=RGBColor(0x3A, 0x63, 0x51), grey=RGBColor(0x6E, 0x6A, 0x62),
+                 title_font="Georgia", body_font="Calibri", suffix="_warm"),
+    # cool slate: pale cool-grey, sans throughout, navy/teal
+    "slate": dict(bg=RGBColor(0xF4, 0xF6, 0xFA), ink=RGBColor(0x1F, 0x29, 0x33), accent=RGBColor(0x0F, 0x60, 0x9B),
+                  header=RGBColor(0x33, 0x4E, 0x68), grey=RGBColor(0x62, 0x6E, 0x7B),
+                  title_font="Segoe UI", body_font="Segoe UI", suffix="_slate"),
+}
+THEME = THEMES[sys.argv[1] if len(sys.argv) > 1 else "academic"]
+OUT = Path(f"paper/slides/TALK_10MIN_formal{THEME['suffix']}.pptx")
+
+DARK = THEME["ink"]
+ACCENT = THEME["accent"]
+BLUE = THEME["header"]
+GREY = THEME["grey"]
+
+
+def paint(s):
+    if THEME["bg"] is not None:
+        s.background.fill.solid()
+        s.background.fill.fore_color.rgb = THEME["bg"]
+    return s
 
 prs = Presentation()
 prs.slide_width = Inches(13.333)
@@ -33,11 +62,12 @@ BLANK = prs.slide_layouts[6]
 
 
 def slide(title, time_budget):
-    s = prs.slides.add_slide(BLANK)
+    s = paint(prs.slides.add_slide(BLANK))
     tb = s.shapes.add_textbox(Inches(0.45), Inches(0.22), Inches(11.4), Inches(0.95))
     p = tb.text_frame.paragraphs[0]
     p.text = title
     p.font.size = Pt(26); p.font.bold = True; p.font.color.rgb = DARK
+    if THEME["title_font"]: p.font.name = THEME["title_font"]
     badge = s.shapes.add_textbox(Inches(12.0), Inches(0.30), Inches(1.1), Inches(0.4))
     bp = badge.text_frame.paragraphs[0]
     bp.text = time_budget
@@ -57,6 +87,7 @@ def bullets(s, items, left=0.6, top=1.35, width=12.1, height=5.6, size=18):
         p.font.bold = kwargs.get("bold", False)
         p.font.italic = kwargs.get("italic", False)
         p.font.color.rgb = kwargs.get("color", DARK)
+        if THEME["body_font"]: p.font.name = THEME["body_font"]
         p.level = kwargs.get("level", 0)
         p.space_after = Pt(kwargs.get("space", 10))
     return tb
@@ -82,6 +113,7 @@ def table(s, rows, left, top, width, height, col_widths=None, header_fill=BLUE, 
             cell.text = str(val)
             p = cell.text_frame.paragraphs[0]
             p.font.size = Pt(size); p.font.bold = i == 0
+            if THEME["body_font"]: p.font.name = THEME["body_font"]
             if i == 0:
                 cell.fill.solid(); cell.fill.fore_color.rgb = header_fill
                 p.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
@@ -93,14 +125,16 @@ def notes(s, text):
 
 
 # ---- 1. Title ----------------------------------------------------------------
-s = prs.slides.add_slide(BLANK)
+s = paint(prs.slides.add_slide(BLANK))
 tb = s.shapes.add_textbox(Inches(0.8), Inches(2.1), Inches(11.7), Inches(2.2))
 p = tb.text_frame.paragraphs[0]
 p.text = "Does relational structure improve linear-probe"
 p.font.size = Pt(34); p.font.bold = True; p.font.color.rgb = DARK
+if THEME["title_font"]: p.font.name = THEME["title_font"]
 p2 = tb.text_frame.add_paragraph()
 p2.text = "detection of related AI-safety concepts?"
 p2.font.size = Pt(34); p2.font.bold = True; p2.font.color.rgb = DARK
+if THEME["title_font"]: p2.font.name = THEME["title_font"]
 tb2 = s.shapes.add_textbox(Inches(0.8), Inches(4.5), Inches(11.7), Inches(1.4))
 p = tb2.text_frame.paragraphs[0]
 p.text = "Jason Boudville"
