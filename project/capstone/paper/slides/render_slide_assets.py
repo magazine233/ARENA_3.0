@@ -180,10 +180,47 @@ def slide9_anisotropy(formal=False):
     plt.close(fig)
 
 
+def menger_diagram():
+    """Vertex-disjoint paths illustration for the Menger slide (transparent PNG, blends
+    with any deck background). k(A,B)=3: three independent routes, no shared nodes."""
+    fig, ax = plt.subplots(figsize=(7.2, 4.6))
+    A, B = (0.0, 0.0), (6.0, 0.0)
+    paths = [
+        ([(1.8, 1.5), (4.2, 1.5)], "#3A6351"),   # A–C–D–B (top)
+        ([(3.0, 0.0)], "#8C2D2D"),               # A–E–B (middle)
+        ([(1.8, -1.5), (4.2, -1.5)], "#4C72B0"), # A–F–G–B (bottom)
+    ]
+    names = iter(["C", "D", "E", "F", "G"])
+    for mids, color in paths:
+        pts = [A] + mids + [B]
+        for p1, p2 in zip(pts, pts[1:]):
+            ax.annotate("", xy=p2, xytext=p1,
+                        arrowprops=dict(arrowstyle="-", lw=2.4, color=color, alpha=0.85))
+        for m in mids:
+            ax.scatter(*m, s=900, color="white", edgecolors=color, linewidths=2.2, zorder=3)
+            ax.text(*m, next(names), ha="center", va="center", fontsize=12, color=color,
+                    fontweight="bold", zorder=4)
+    for pt, name in [(A, "A"), (B, "B")]:
+        ax.scatter(*pt, s=1500, color="#2B2B28", zorder=3)
+        ax.text(*pt, name, ha="center", va="center", fontsize=15, color="white",
+                fontweight="bold", zorder=4)
+    ax.text(3.0, 2.35, "k(A, B) = 3 vertex-disjoint paths — no shared intermediate node",
+            ha="center", fontsize=12.5, fontweight="bold", color="#2B2B28")
+    ax.text(3.0, -2.35, "equivalently: disconnecting A from B requires removing at least 3 nodes",
+            ha="center", fontsize=11, fontstyle="italic", color="#6E6A62")
+    ax.set_xlim(-0.9, 6.9)
+    ax.set_ylim(-2.8, 2.8)
+    ax.axis("off")
+    fig.tight_layout()
+    fig.savefig(ASSETS / "menger_diagram.png", dpi=200, transparent=True)
+    plt.close(fig)
+
+
 if __name__ == "__main__":
     slide2_graph()
     slide4_timeline()
     slide7_cartoon()
     slide9_anisotropy()
     slide9_anisotropy(formal=True)
-    print(f"rendered 5 assets -> {ASSETS}")
+    menger_diagram()
+    print(f"rendered 6 assets -> {ASSETS}")
