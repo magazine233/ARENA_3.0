@@ -134,22 +134,32 @@ def slide7_cartoon():
     plt.close(fig)
 
 
-def slide9_anisotropy():
+def slide9_anisotropy(formal=False):
     """Before/after of the geometry near-miss: raw cosine (looks flat) vs mean-centred
-    (structure reappears). Numbers from REPLICATION_WRITEUP §6 / paper §6.2."""
+    (structure reappears). Numbers from REPLICATION_WRITEUP §6 / paper §6.2.
+    formal=True renders the academic-register variant (slide9_anisotropy_formal.png)."""
     import numpy as np
     fig, (axL, axR) = plt.subplots(1, 2, figsize=(10, 4.4))
+
+    t = {
+        "sup": ("Geometry control: raw cosine is anisotropy-confounded; mean-centring recovers structure"
+                if formal else "Twice the raw data nearly lied to us — twice a control caught it"),
+        "lt": "Raw cosine\n(anisotropy-confounded)" if formal else "RAW cosine\n\"the graph isn't even in the model?\"",
+        "la": "adjacent ≈ non-adjacent\n(artifact)" if formal else "looks flat —\nbut it's an artifact",
+        "rt": "Mean-centred\n(graph structure recovered)" if formal else "MEAN-CENTRED (anisotropy removed)\nstructure snaps back",
+        "rc": ("graded distance r ≈ −0.30:\nlocal structure real,\nmulti-hop absent" if formal
+               else "graded distance\nstill flat (r ≈ −0.30):\nlocal real,\nmulti-hop absent"),
+    }
 
     # LEFT — raw cosine: adjacent vs non-adjacent nearly identical (the trap)
     axL.bar([0, 1], [0.971, 0.961], color=["#4C72B0", "#C44E52"], width=0.6)
     axL.set_ylim(0.90, 1.0)
     axL.set_xticks([0, 1]); axL.set_xticklabels(["graph-\nadjacent", "non-\nadjacent"], fontsize=10)
-    axL.set_title("RAW cosine\n\"the graph isn't even in the model?\"", fontsize=11)
+    axL.set_title(t["lt"], fontsize=11)
     axL.set_ylabel("centroid cosine")
     for x, v in zip([0, 1], [0.971, 0.961]):
         axL.text(x, v + 0.002, f"{v:.3f}", ha="center", fontsize=11, fontweight="bold")
-    axL.annotate("looks flat —\nbut it's an artifact", (0.5, 0.935), ha="center", fontsize=10,
-                 fontstyle="italic", color="#777777")
+    axL.annotate(t["la"], (0.5, 0.935), ha="center", fontsize=10, fontstyle="italic", color="#777777")
 
     # RIGHT — mean-centred: structure reappears
     cats = ["adjacent\nseparation", "far controls\n(dog/weather)"]
@@ -158,16 +168,15 @@ def slide9_anisotropy():
     axR.axhline(0, color="k", lw=0.8)
     axR.set_ylim(-0.22, 0.24)
     axR.set_xticks([0, 1]); axR.set_xticklabels(cats, fontsize=10)
-    axR.set_title("MEAN-CENTRED (anisotropy removed)\nstructure snaps back", fontsize=11)
+    axR.set_title(t["rt"], fontsize=11)
     axR.set_ylabel("mean-centred cosine")
     axR.text(0, 0.166 + 0.012, "+0.166", ha="center", fontsize=11, fontweight="bold")
     axR.text(1, -0.147 - 0.022, "−0.147", ha="center", va="top", fontsize=11, fontweight="bold")
-    axR.text(-0.35, -0.07, "graded distance\nstill flat (r ≈ −0.30):\nlocal real,\nmulti-hop absent",
-             ha="left", va="top", fontsize=9, fontstyle="italic", color="#555555")
+    axR.text(-0.35, -0.07, t["rc"], ha="left", va="top", fontsize=9, fontstyle="italic", color="#555555")
 
-    fig.suptitle("Twice the raw data nearly lied to us — twice a control caught it", fontsize=13, fontweight="bold")
+    fig.suptitle(t["sup"], fontsize=13, fontweight="bold")
     fig.tight_layout(rect=[0, 0, 1, 0.95])
-    fig.savefig(ASSETS / "slide9_anisotropy.png", dpi=200)
+    fig.savefig(ASSETS / ("slide9_anisotropy_formal.png" if formal else "slide9_anisotropy.png"), dpi=200)
     plt.close(fig)
 
 
@@ -176,4 +185,5 @@ if __name__ == "__main__":
     slide4_timeline()
     slide7_cartoon()
     slide9_anisotropy()
-    print(f"rendered 4 assets -> {ASSETS}")
+    slide9_anisotropy(formal=True)
+    print(f"rendered 5 assets -> {ASSETS}")
