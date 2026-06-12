@@ -1,7 +1,9 @@
 # Knowing the Graph: Does Relational Structure Improve Linear-Probe Detection of Related AI-Safety Concepts?
 
-*Jason Boudville. — DRAFT SCAFFOLD assembled 2026-06-11, before iteration-4 lands. (Second-model work credited as
-"peer replication" throughout — the crediting they requested, confirmed 2026-06-12.)
+*Jason Boudville. — FULL DRAFT: scaffold assembled 2026-06-11; **iteration-4 verdict landed 2026-06-12 and is
+filled in throughout** (§5.4 = powered, pre-registered NULL; abstract and §8 resolved). Remaining work is editorial
+— Jason's voice pass — not results. (Second-model work credited as "peer replication" throughout — the crediting
+they requested, confirmed 2026-06-12.)
 Everything except §5.4 is determined by completed work; §5.4 has both pre-written outcome variants (legitimate
 because the decision rule is locked in `../iteration4_scaling/PREREGISTRATION.md` §3 — we fill in the verdict, we
 don't choose it). Numbers verified against the result artifacts named in `PAPER_OUTLINE.md`. Jason: every section
