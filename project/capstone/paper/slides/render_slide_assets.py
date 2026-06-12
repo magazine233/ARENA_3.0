@@ -134,8 +134,46 @@ def slide7_cartoon():
     plt.close(fig)
 
 
+def slide9_anisotropy():
+    """Before/after of the geometry near-miss: raw cosine (looks flat) vs mean-centred
+    (structure reappears). Numbers from REPLICATION_WRITEUP §6 / paper §6.2."""
+    import numpy as np
+    fig, (axL, axR) = plt.subplots(1, 2, figsize=(10, 4.4))
+
+    # LEFT — raw cosine: adjacent vs non-adjacent nearly identical (the trap)
+    axL.bar([0, 1], [0.971, 0.961], color=["#4C72B0", "#C44E52"], width=0.6)
+    axL.set_ylim(0.90, 1.0)
+    axL.set_xticks([0, 1]); axL.set_xticklabels(["graph-\nadjacent", "non-\nadjacent"], fontsize=10)
+    axL.set_title("RAW cosine\n\"the graph isn't even in the model?\"", fontsize=11)
+    axL.set_ylabel("centroid cosine")
+    for x, v in zip([0, 1], [0.971, 0.961]):
+        axL.text(x, v + 0.002, f"{v:.3f}", ha="center", fontsize=11, fontweight="bold")
+    axL.annotate("looks flat —\nbut it's an artifact", (0.5, 0.935), ha="center", fontsize=10,
+                 fontstyle="italic", color="#777777")
+
+    # RIGHT — mean-centred: structure reappears
+    cats = ["adjacent\nseparation", "far controls\n(dog/weather)"]
+    vals = [0.166, -0.147]
+    axR.bar([0, 1], vals, color=["#55A868", "#999999"], width=0.6)
+    axR.axhline(0, color="k", lw=0.8)
+    axR.set_ylim(-0.22, 0.24)
+    axR.set_xticks([0, 1]); axR.set_xticklabels(cats, fontsize=10)
+    axR.set_title("MEAN-CENTRED (anisotropy removed)\nstructure snaps back", fontsize=11)
+    axR.set_ylabel("mean-centred cosine")
+    axR.text(0, 0.166 + 0.012, "+0.166", ha="center", fontsize=11, fontweight="bold")
+    axR.text(1, -0.147 - 0.022, "−0.147", ha="center", va="top", fontsize=11, fontweight="bold")
+    axR.text(-0.35, -0.07, "graded distance\nstill flat (r ≈ −0.30):\nlocal real,\nmulti-hop absent",
+             ha="left", va="top", fontsize=9, fontstyle="italic", color="#555555")
+
+    fig.suptitle("Twice the raw data nearly lied to us — twice a control caught it", fontsize=13, fontweight="bold")
+    fig.tight_layout(rect=[0, 0, 1, 0.95])
+    fig.savefig(ASSETS / "slide9_anisotropy.png", dpi=200)
+    plt.close(fig)
+
+
 if __name__ == "__main__":
     slide2_graph()
     slide4_timeline()
     slide7_cartoon()
-    print(f"rendered 3 assets -> {ASSETS}")
+    slide9_anisotropy()
+    print(f"rendered 4 assets -> {ASSETS}")
