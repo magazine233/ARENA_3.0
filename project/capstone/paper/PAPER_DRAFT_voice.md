@@ -1,7 +1,12 @@
 # Does Relational Structure Improve Linear-Probe Detection of Related AI-Safety Concepts?
 
+> ⚠️ **PARKED AND OUT OF DATE as of 2026-08-05.** `PAPER_DRAFT.md` was made canonical on 2026-08-05 and carries the
+> §7 **near-OOS rejection result** (abstract, §6.1, §7, §8, §9, §10). This file does **not**. Its abstract and §7
+> still present the tiered-negatives recipe without the measured gap, and its §10 still lists the near-OOS test as
+> untested. Do not ship or quote from this file until those edits are ported. Everything below predates the result.
+
 *Jason Boudville. — VOICE-PASS ALTERNATIVE to `PAPER_DRAFT.md`. Same results, same numbers, same bounded claims and
-attributions; the prose is tuned toward Jason's voice (dynamic range — plain reportorial ground, technique spiking
+attributions **as of 2026-06-12** (see the staleness warning above); the prose is tuned toward Jason's voice (dynamic range — plain reportorial ground, technique spiking
 only at the charged moments). An experiment in whether a personal voice survives a research register. Diff against
 `PAPER_DRAFT.md` to see exactly what moved. Second-model work credited as "peer replication" throughout, at their
 request. Numbers audited against the source artifacts named in `PAPER_OUTLINE.md`.*
