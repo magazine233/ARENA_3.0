@@ -1,0 +1,38 @@
+--- volume 7/context ---
+Graph SET_G_N15_graph_contrastive_boundary_v1 [linear]
+  direct_neighbors - random: F1=+0.061 (2726/6240 positive), bal_acc=+0.079, auc=+0.037
+  graph_aware_mixed - random: F1=+0.039 (2328/6240 positive), bal_acc=+0.056, auc=+0.031
+  heldout_edge_graph_aware - random: F1=+0.008 (1744/6240 positive), bal_acc=+0.013, auc=+0.011
+wrote results\iteration4_scaling\sweep_n7.json
+  n=7: held-out-edge dF1=+0.008  direct=+0.061  mixed=+0.039
+--- volume 14/context ---
+Graph SET_G_N15_graph_contrastive_boundary_v1 [linear]
+  direct_neighbors - random: F1=+0.059 (3180/6240 positive), bal_acc=+0.077, auc=+0.030
+  graph_aware_mixed - random: F1=+0.039 (2805/6240 positive), bal_acc=+0.058, auc=+0.026
+  heldout_edge_graph_aware - random: F1=+0.012 (2225/6240 positive), bal_acc=+0.020, auc=+0.009
+wrote results\iteration4_scaling\sweep_n14.json
+  n=14: held-out-edge dF1=+0.012  direct=+0.059  mixed=+0.039
+--- volume 28/context ---
+Graph SET_G_N15_graph_contrastive_boundary_v1 [linear]
+  direct_neighbors - random: F1=+0.050 (3383/6240 positive), bal_acc=+0.067, auc=+0.029
+  graph_aware_mixed - random: F1=+0.034 (2856/6240 positive), bal_acc=+0.052, auc=+0.026
+  heldout_edge_graph_aware - random: F1=+0.009 (2387/6240 positive), bal_acc=+0.016, auc=+0.009
+wrote results\iteration4_scaling\sweep_n28.json
+  n=28: held-out-edge dF1=+0.009  direct=+0.050  mixed=+0.034
+--- volume 56/context ---
+Graph SET_G_N15_graph_contrastive_boundary_v1 [linear]
+  direct_neighbors - random: F1=+0.040 (3490/6240 positive), bal_acc=+0.059, auc=+0.026
+  graph_aware_mixed - random: F1=+0.030 (3004/6240 positive), bal_acc=+0.048, auc=+0.025
+  heldout_edge_graph_aware - random: F1=+0.004 (2368/6240 positive), bal_acc=+0.013, auc=+0.007
+wrote results\iteration4_scaling\sweep_n56.json
+  n=56: held-out-edge dF1=+0.004  direct=+0.040  mixed=+0.030
+--- volume 70/context ---
+Graph SET_G_N15_graph_contrastive_boundary_v1 [linear]
+  direct_neighbors - random: F1=+0.040 (3648/6240 positive), bal_acc=+0.059, auc=+0.027
+  graph_aware_mixed - random: F1=+0.030 (3063/6240 positive), bal_acc=+0.048, auc=+0.025
+  heldout_edge_graph_aware - random: F1=+0.005 (2514/6240 positive), bal_acc=+0.013, auc=+0.008
+wrote results\iteration4_scaling\sweep_n70.json
+  n=70: held-out-edge dF1=+0.005  direct=+0.040  mixed=+0.030
+
+HELD-OUT-EDGE dF1 vs volume: {7: 0.008, 14: 0.012, 28: 0.009, 56: 0.004, 70: 0.005}
+Saved results/iteration4_scaling/scaling_sweep_gemma2_9b.json
