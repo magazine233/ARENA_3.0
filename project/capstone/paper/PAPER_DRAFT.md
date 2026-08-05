@@ -42,66 +42,97 @@ stays open.
 
 ## 1. Introduction
 
-- **Why relational concept sets matter for safety probing.** Deployable monitoring wants per-concept lenses over
-  families of related behaviours (the SET G manipulation/deception/influence family). The naive hope: relational
-  knowledge (an ontology/graph) should make probes better — more data per boundary, structure to generalise along.
-- **The specific hypothesis we inherited.** Relationship-aware training improves discrimination, and the
-  benefit scales with graph *connectivity* (Menger / vertex-disjoint alternate paths) — if A and B are connected by
-  many independent paths, a probe should triangulate their boundary even without direct A-vs-B data.
-- **What we did.** Four iterations; after iteration 1's false positive, every powered run was pre-registered
-  before execution, with adversarial verification of every positive result; an independent peer replication and
-  extension — by the hypothesis's originator — on a second model. The result is a *bounded* claim with an
-  explanatory model, not a yes/no.
-- **Contributions** (foregrounding what the process earned):
-  1. A valid, powered, pre-registered test of the relational hypothesis — fixing iteration-1's validity and power
-     errors rather than publishing them.
-  2. The controls that bound the surviving effect — vocabulary regression (~⅓ lexical), placebo-graph permutation
-     (declared graph is special, p=0.002) — and the pre-registered scaling sweep of the peer replication's held-out-edge condition
-     (the test that isolates connectivity from adjacency).
-  3. Cross-model convergence under peer replication: Gemma-2-9B (this work) and Gemma-4-E4B (peer replication),
-     two codebases, same numbers to two decimal places.
-  4. A reframing — from vertex connectivity to independent-constraint boundary coverage — that predicts the full
-     pattern of results, plus its deployment corollary (the tiered-negatives recipe and the rejection scaffold).
+Reach for an ontology and the promise is seductive: structure is free, data is not. If you already know that
+manipulation borders deception, and deception borders propaganda, surely a detector can lean on that map — more data
+per boundary, a scaffold to generalise along, the neighbours' borders standing in for the one you cannot see.
+Deployable safety monitoring wants exactly this: per-concept lenses over a whole family of related behaviours (here,
+the SET G manipulation / deception / influence family), built cheaply and trusted in production. So the question is
+worth asking carefully, which is what this paper is about.
+
+The specific hypothesis we inherited has a sharp form. Relationship-aware training improves discrimination, and the
+benefit scales with graph *connectivity* — Menger's quantity, the number of vertex-disjoint paths between two
+concepts. The intuition is that if A and B are joined by many independent routes through the graph, a probe should
+triangulate their boundary even with no direct A-versus-B data. It is a clean, testable, and genuinely useful claim
+if it holds.
+
+It mostly does not — and saying so with confidence took four iterations. After the first one fooled us (more on that
+below, because the way it fooled us is the methodological point of the paper), every powered run was pre-registered
+before execution, every positive result was adversarially verified, and the whole study was independently
+peer-replicated and extended on a second model by the researcher who originated the hypothesis. What we are left
+with is not a yes or a no but a *bounded* claim with a mechanism behind it — and, at the end, a measured account of
+where that mechanism stops paying.
+
+Five things we want to foreground, because the discipline is the contribution as much as the result:
+
+1. A valid, powered, pre-registered test of the relational hypothesis — built by fixing iteration 1's validity and
+   power errors, rather than publishing them.
+2. The controls that fence the surviving effect in: a vocabulary regression (~⅓ of it is lexical), a placebo-graph
+   permutation (the declared graph is genuinely special, p=0.002), and the pre-registered scaling sweep of the peer
+   replication's held-out-edge condition — the one test that cleanly separates connectivity from adjacency.
+3. Cross-model convergence under peer replication: Gemma-2-9B (this work) and Gemma-4-E4B (peer replication), two
+   codebases, the same numbers to two decimal places.
+4. A reframing — from vertex connectivity to independent-constraint boundary coverage — that predicts the whole
+   pattern of results, and the deployment recipe that falls out of it.
+5. The boundary of that recipe, measured rather than guessed: a pre-committed rejection test on legitimate influence
+   shows the scaffold seals the faces it trains against and leaves the hard regime wide open (§7).
 
 ## 2. Background & setup
 
-- **Concept set & graph.** SET G: 15 AI-safety concepts (manipulation/deception/influence family), curated
-  relational graph `SET_G_N15_graph_contrastive_boundary_v1` (26 rationalised edges). Concepts defined by
-  one-sentence definitions; passages generated by Claude across 4 surface-distinct contexts (workplace, online,
-  relationships, marketplace) so probes are evaluated out-of-distribution (train on 3 contexts, test on the held-out
-  one) — the v1 lesson: without the OOD split, surface vocabulary saturates everything (AUC ~1.0).
-- **Probing.** Mean-pooled residual stream, layer 18 (Gemma-2-9B, d=3584; E4B analogue = hidden_states[19]); logistic
-  regression one-vs-rest / pairwise probes; 30 seeds. Layer-18 choice later validated by a 42-layer sweep (§6.2).
-- **Menger framing.** Vertex connectivity k(A,B) = number of vertex-disjoint paths; the hypothesis predicts probe
-  benefit increases with k.
-- **Collaboration & discipline.** Jason leads the iterations and the paper; the study is independently replicated
-  and extended on E4B (credited throughout as the peer replication, at their request). Norms: pre-register
-  before powered runs; adversarially verify positives; bound claims honestly. (Iteration 1's "positive" was a
-  noise artifact caught exactly this way.)
+The substrate is deliberately plain, so that anything we find belongs to the question and not to the machinery. SET G
+is 15 AI-safety concepts from the manipulation / deception / influence family, wired together by a curated relational
+graph (`SET_G_N15_graph_contrastive_boundary_v1`, 26 rationalised edges). Each concept gets a one-sentence
+definition; Claude writes the passages, across four surface-distinct contexts — workplace, online, relationships,
+marketplace — and we always evaluate out-of-distribution, training on three contexts and testing on the fourth. That
+last choice is not bookkeeping; it is the whole reason the experiment has headroom. The v1 attempt skipped it, and
+surface vocabulary promptly saturated every probe to AUC ≈ 1.0, leaving nothing to measure.
+
+Probing is equally unglamorous: mean-pooled residual stream at layer 18 (Gemma-2-9B, d=3584; the E4B analogue is
+`hidden_states[19]`), logistic regression run one-vs-rest or pairwise, 30 seeds. The layer-18 choice is not
+load-bearing — a sweep over all 43 layer positions (§6.2) confirms it later. Menger's connectivity k(A,B), the count
+of vertex-disjoint paths, is the quantity the inherited hypothesis says probe benefit should track.
+
+A word on how the work was done, because it shapes how much you should trust it. Jason leads the iterations and this
+paper; the study is independently replicated and extended on E4B by the peer replication, credited as such at their
+request. The standing rules were three: pre-register before any powered run, adversarially verify every positive, and
+bound every claim honestly. The first iteration is why those rules exist.
 
 ## 3. The honest null (iterations 1–2)
 
-- **Iteration 1.** Definitional vs relational probing + Menger correlation, multiclass. Initially read as positive;
-  adversarial verification showed a noise-positive (and, in hindsight, the *wrong question* — relations as extra
-  positive passages). Lesson logged, design rebuilt.
-- **Iteration 2 (R4).** Pair-matched, powered (105 pairs), pre-registered Menger test: **partial Spearman −0.125**
-  — a clean, powered NULL on "connectivity predicts pairwise probe benefit." Decision rule was locked before the
-  run; the null is reported as a result, not buried.
-- Takeaway carried forward: if relational structure matters, it isn't via *more positive data along the graph*.
+Iteration 1 looked positive. It was wrong.
+
+It compared definitional against relational probing with a Menger correlation, multiclass, and it came back with the
+result we were hoping for — until adversarial verification took it apart and found a noise artifact wearing the
+costume of a signal. Worse, in hindsight, it had asked the wrong question entirely: it treated "knowing the
+relations" as a licence to add more *positive* passages, which is not what the hypothesis was ever about. We logged
+the lesson and rebuilt the design.
+
+Iteration 2 (R4) did it properly: pair-matched, powered across 105 pairs, the decision rule locked before a single
+number came back. The Menger correlation came in at a partial Spearman of **−0.125** — a clean, powered null on the
+claim that connectivity predicts pairwise probe benefit. Because we had pre-registered, there was nowhere to hide it
+and no reason to; it is reported as a result, not buried as a disappointment.
+
+What survived into the next iteration was a single negative lesson, and it turned out to be the productive one: if
+relational structure matters at all, it is not through more positive data strung along the graph.
 
 ## 4. The reframe: relations as hard negatives, and iteration 3 / Path 2
 
-- **The peer replication's diagnosis.** The capstone operationalised "knowing the relations" as extra *positives*; the
-  hypothesis's actual mechanism uses related concepts as *hard negatives* — contrast, not coverage.
-- **Iteration 3 / Path 2 (pre-registered, Gemma-2-9B).** Declared siblings ARE more confusable than non-siblings —
-  placebo-graph permutation p=0.002 (the curated graph is special, not an artifact of having *a* graph); clean
-  primary effect **+0.055 F1** (Experiment A, the sibling-vs-random confusability gap; the in-distribution
-  training-benefit variant is larger but inflated); vocabulary regression attributes **~⅓** of the effect to
-  lexical overlap (an upper bound on the lexical share — the regression over-controls, since vocabulary partly
-  mediates relatedness); the graph-beyond-vocabulary residual is positive but marginal.
-- **Cross-model convergence.** The peer replication's graph-contrastive test on E4B (their design and first run, 30 seeds):
-  direct-neighbour negatives **+0.057**, graph-aware mixed **+0.043**, held-out-edge **+0.008**. Our Gemma-2-9B
-  baseline at 14/context reproduces it: **+0.059 / +0.039 / +0.012**. Same pattern, two models, two codebases.
+The peer replication supplied the diagnosis we had missed. The capstone had operationalised "knowing the relations"
+as extra *positives*; the hypothesis's real mechanism uses related concepts as *hard negatives*. Contrast, not
+coverage. You do not tell a probe more about what manipulation *is* — you show it the sibling it keeps being confused
+with, and make that sibling the thing to push away from.
+
+Iteration 3 / Path 2, pre-registered on Gemma-2-9B, put that to the test, and it held. Declared siblings really are
+more confusable than non-siblings — a placebo-graph permutation pins this at **p=0.002**, so the curated graph is
+genuinely special and not just an artifact of having *a* graph. The clean primary effect is **+0.055 F1** (the
+sibling-vs-random confusability gap of Experiment A; the in-distribution training-benefit variant runs larger but is
+inflated, so we do not headline it). And the honest discount: a vocabulary regression attributes about **a third** of
+the effect to lexical overlap — an upper bound, in fact, since the regression over-controls when vocabulary itself
+partly carries the relatedness. What is left, graph beyond vocabulary, is positive but marginal.
+
+It replicates across models. The peer replication's graph-contrastive test on E4B (their design, their first run, 30
+seeds) gives direct-neighbour negatives **+0.057**, graph-aware mixed **+0.043**, held-out-edge **+0.008**. Our
+Gemma-2-9B baseline at 14 definitions per context lands at **+0.059 / +0.039 / +0.012**. Same pattern, two models,
+two codebases.
 
 ## 5. Connectivity isolated: the held-out-edge test and the scaling sweep
 
@@ -112,8 +143,9 @@ sibling** (held-out-edge) — the clean alternate-path/Menger condition: if conn
 the *other* relationships should partially reconstruct the withheld boundary.
 
 ### 5.2 The local effect is real; the connectivity effect is ≈0
-Direct ~+0.06, mixed ~+0.04, held-out-edge ~+0.01 (both models, Section 4 numbers). The benefit ordering follows
-proximity to the tested boundary, not path count.
+Direct ~+0.06, mixed ~+0.04, held-out-edge ~+0.01 (both models, Section 4 numbers; **Fig. 2**). The benefit ordering
+follows proximity to the tested boundary, not path count. **Fig. 1** shows what the four negative-set conditions
+actually mean on the concept graph.
 
 ### 5.3 Robustness (peer-replication extensions)
 - **Layer sweep:** the deltas reproduce at layers 8/18/24/42; discrimination is near-ceiling at *every* layer
@@ -128,8 +160,9 @@ Pre-registered (LOCKED 2026-06-10): Gemma-2-9B, volumes {7, 14, 28, 56, 70}/cont
 70/context (10×) generation+extraction (4,200 passages, blind-audit self-match 95%); primary endpoint =
 held-out-edge ΔF1 vs volume; decision rule locked. Run 2026-06-12, 30 seeds.
 
-**Result — NULL, the strong outcome.** Held-out-edge ΔF1 by volume: **+0.008, +0.012, +0.009, +0.005, +0.005** —
-no monotonic rise (the curve *declines* past 14/context). At the top volume, paired across the 52 directed edges:
+**Result — NULL, the strong outcome** (**Fig. 5**, the headline sweep with the E4B points overlaid; **Fig. 6**,
+reliability vs volume; **Fig. 7**, the per-edge picture at top volume). Held-out-edge ΔF1 by volume: **+0.008,
++0.012, +0.009, +0.005, +0.005** — no monotonic rise (the curve *declines* past 14/context). At the top volume, paired across the 52 directed edges:
 mean **+0.0046, 95% CI [−0.0053, +0.0144]**, paired-t p=0.36, Wilcoxon p=0.78 — the CI spans zero, the locked NULL
 criterion. **Power is shown, not asserted:** the minimum detectable effect at 80% power was **ΔF1 = 0.014**, and
 the same instrument detects the direct-neighbour effect at the same volume at ~3× that size (+0.040, CI [+0.021,
@@ -168,8 +201,9 @@ size of the leak is now measured instead of assumed.
 Raw cosine said "everything overlaps" (adjacent 0.971 vs non-adjacent 0.961) — an anisotropy artifact (random
 passage pairs sit at ~0.89). Mean-centred: adjacent pairs separate (+0.166), far-domain controls sit clearly
 outside (−0.147), but *graded* graph distance still doesn't track representation (r ≈ −0.30 at layer 18; −0.27 to
-−0.40 across all 42 layers). The geometry independently reproduces the probe story: local adjacency real, multi-hop
-structure absent. Probe results are unaffected (a linear classifier factors out the common direction).
+−0.39, median −0.34, across all 43 layer positions). The geometry independently reproduces the probe story: local
+adjacency real, multi-hop structure absent. Probe results are unaffected (a linear classifier factors out the common
+direction).
 
 ### 6.3 Generation mode is a non-factor (Path 3 first run) [peer replication]
 True autoregressive states vs teacher-forced re-reads: graduation pass rates 0.692 vs 0.693 (causal equivalence);
@@ -281,6 +315,28 @@ repository records the full provenance of each result.
 
 ---
 
+## Figures (manifest — all committed, all regenerable from committed JSONs)
+
+| # | File | Cited | What it carries |
+|---|---|---|---|
+| 1 | `../iteration4_scaling/figures/fig1_conditions.png` | §5.2 | What the negative-set conditions mean on the concept graph |
+| 2 | `../iteration4_scaling/figures/fig2_baseline_bars.png` | §5.2 | F1 gain by condition, Gemma-2-9B vs E4B side by side |
+| 3 | `../iteration4_scaling/figures/fig3_volume_curve.png` | §5.4 (alt) | Held-out-edge gain stays flat as volume grows |
+| 4 | `../iteration4_scaling/figures/fig4_conclusion.png` | talk only | One-slide takeaway; not needed in the paper |
+| 5 | `../iteration4_scaling/figures/fig5_sweep_with_e4b_overlay.png` | §5.4 | **Headline sweep**, E4B points overlaid |
+| 6 | `../iteration4_scaling/figures/fig6_reliability_vs_volume.png` | §5.4 | Scale buys reliability, not magnitude |
+| 7 | `../iteration4_scaling/figures/fig7_per_edge_topvolume.png` | §5.4 | Per-edge deltas at top volume |
+| 8 | `../results/near_oos_rejection/fig8_fpr_by_face.png` | §7 | **FPR by face × scheme**; near-OOS sealed by nothing |
+
+Rebuild: figs 1–7 `python iteration4_scaling/figures/render_figures.py`; fig 8
+`python scripts/render_near_oos_figure.py`. Captions for 1–7 in
+`../iteration4_scaling/figures/CAPTIONS.md`, for 8 in `../NEAR_OOS_RESULT_NOTE.md`.
+
+**Fig. 5 caption must state (pre-reg §4):** "E4B points are independent corroboration; the headline trend is
+within-model (Gemma-2-9B)."
+
+---
+
 ## Assembly checklist (delete before submission)
 
 - [x] §5.4 filled (2026-06-12, NULL verdict from `ITERATION4_results_explorer.ipynb`); variants deleted; MDE and
@@ -293,8 +349,18 @@ repository records the full provenance of each result.
       straddles it). Caption in `../NEAR_OOS_RESULT_NOTE.md`; rebuild via `scripts/render_near_oos_figure.py`.
 - [ ] Decide whether `PAPER_DRAFT_voice.md` is retired or brought forward — it does **not** carry any of the
       2026-08-05 near-OOS edits and is now materially out of date.
-- [ ] Figures: fig5 (headline sweep + E4B overlay), fig7 (per-edge at top volume) from `iteration4_scaling/figures/`;
-      Path-2 placebo + vocabulary figures from `results/path2_*`; the §7 FPR-by-face table. fig5 caption must say:
-      "E4B points are independent corroboration; the headline trend is within-model (Gemma-2-9B)" — pre-reg §4.
-- [ ] Numbers audit: re-run the claims check (every number here against its source JSON) after §5.4 is filled.
-- [ ] Jason's voice pass: especially Intro and §8 — the scaffold's claims are right; the prose should become yours.
+- [x] Figures wired (2026-08-05) — manifest above; figs 1/2 cited in §5.2, 5/6/7 in §5.4, 8 in §7. **No Path-2
+      placebo or vocabulary figure exists** (only the JSONs); build one or drop the idea — it is not currently
+      referenced anywhere.
+- [x] Numbers audit complete (2026-08-05). §5.4 and all §7 near-OOS numbers verified earlier; §§4, 6.2, 6.3 and the
+      peer-replication half of §7 verified against source JSONs this pass. **Everything matched except one fix
+      applied here:** §6.2's graded-distance correlation range was "−0.27 to −0.40 across all 42 layers"; the
+      committed `layer_sweep_geometry.json` gives −0.2744 to −0.3949 (median −0.3388) over 43 layer positions, so
+      the text now reads "−0.27 to −0.39, median −0.34, across all 43 layer positions".
+      **One provenance caveat:** §7's "thresholds set on train positives collapsed to 34% held-out TPR" is
+      documented in `../REPLICATION_WRITEUP.md` prose, not in any committed JSON — cite it as the peer
+      replication's reported figure, or ask them to emit the artifact.
+- [x] Jason's voice pass on §§1–4 (2026-08-05), ported from the parked `PAPER_DRAFT_voice.md` and updated for the
+      near-OOS result (contribution 5 added to §1; §2's layer-sweep count corrected to 43).
+- [ ] Voice pass on §§5–10 — still in the scaffold's terser register. §8 in particular was written to close the
+      paper and should be read aloud.
