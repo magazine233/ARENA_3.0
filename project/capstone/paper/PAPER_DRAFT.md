@@ -3,8 +3,9 @@
 *Jason Boudville. — FULL DRAFT: scaffold assembled 2026-06-11; **iteration-4 verdict landed 2026-06-12 and is
 filled in throughout** (§5.4 = powered, pre-registered NULL; abstract and §8 resolved); **the §7 near-OOS rejection
 test landed 2026-08-05 and is filled in throughout** (abstract, §6.1, §7, §8, §9, §10). This file is the canonical
-draft (decided 2026-08-05); `PAPER_DRAFT_voice.md` is parked and does not carry the near-OOS edits. Remaining work
-is editorial — Jason's voice pass over §§1–4, which are still bullet fragments — plus figures. (Second-model work credited as "peer replication" throughout — the crediting
+draft (decided 2026-08-05); `PAPER_DRAFT_voice.md` is parked and does not carry the near-OOS edits. **The voice pass
+is complete across §§1–10 (2026-08-05)** and all 8 figures are wired. What remains is Jason's own read-through — the
+prose is in his register but it is not yet his — plus the two open items in the checklist below. (Second-model work credited as "peer replication" throughout — the crediting
 they requested, confirmed 2026-06-12.)
 Everything except §5.4 is determined by completed work; §5.4 has both pre-written outcome variants (legitimate
 because the decision rule is locked in `../iteration4_scaling/PREREGISTRATION.md` §3 — we fill in the verdict, we
@@ -137,159 +138,195 @@ two codebases.
 ## 5. Connectivity isolated: the held-out-edge test and the scaling sweep
 
 ### 5.1 The negative-set design (four conditions)
-Per directed edge (target → held-out sibling): train the target's probe with negatives drawn as (a) count-matched
-random non-graph concepts, (b) direct neighbours, (c) graph-aware mixed, (d) **graph-aware excluding the evaluated
-sibling** (held-out-edge) — the clean alternate-path/Menger condition: if connectivity carries transferable signal,
-the *other* relationships should partially reconstruct the withheld boundary.
+Everything turns on which concepts you hand the probe as negatives. For each directed edge — a target concept and one
+held-out sibling — we train the target's probe four ways: against (a) count-matched random non-graph concepts, (b)
+direct neighbours, (c) a graph-aware mixed set, and (d) graph-aware negatives that *exclude the very sibling being
+evaluated*, the held-out-edge condition. That last one is the clean alternate-path test. If connectivity carries
+transferable signal, the *other* relationships ought to reconstruct the boundary we withheld. **Fig. 1** shows what
+the conditions mean on the concept graph itself.
 
 ### 5.2 The local effect is real; the connectivity effect is ≈0
-Direct ~+0.06, mixed ~+0.04, held-out-edge ~+0.01 (both models, Section 4 numbers; **Fig. 2**). The benefit ordering
-follows proximity to the tested boundary, not path count. **Fig. 1** shows what the four negative-set conditions
-actually mean on the concept graph.
+Direct ~+0.06, mixed ~+0.04, held-out-edge ~+0.01 — both models, the Section 4 numbers, side by side in **Fig. 2**.
+The benefit tracks how close a negative sits to the boundary being tested, not how many paths run to it. The graph
+helps where it touches; one hop away, it stops.
 
 ### 5.3 Robustness (peer-replication extensions)
-- **Layer sweep:** the deltas reproduce at layers 8/18/24/42; discrimination is near-ceiling at *every* layer
-  (lexical separability from the embedding layer up); held-out-edge is dead at every depth. Layer 18 is
-  representative, not cherry-picked.
-- **4× volume (E4B, 28/context):** held-out-edge mean flat (+0.008 → +0.010); the std of paired deltas tightens
-  (0.106 → 0.065) — scale buys *reliability*, not magnitude; held-out-edge positive in only ~40% of comparisons.
+Two extensions close off the easy escape routes. A **layer sweep** reruns the conditions at layers 8, 18, 24 and 42:
+the deltas reproduce at every depth, discrimination is near-ceiling everywhere (lexically separable from the
+embedding layer up), and held-out-edge is dead throughout — layer 18 is representative, not cherry-picked. A **4×
+volume** run on E4B (28/context) holds the held-out-edge mean flat (+0.008 → +0.010) while the spread of the paired
+deltas tightens (std 0.106 → 0.065): more data made the estimate steadier without making it bigger. Even at 4×,
+held-out-edge came out positive in only about 40% of comparisons — a coin nudged barely off fair.
 
 ### 5.4 Iteration 4: the powered scaling sweep — result: NULL under the locked rule
 
-Pre-registered (LOCKED 2026-06-10): Gemma-2-9B, volumes {7, 14, 28, 56, 70}/context subsampled from a single
-70/context (10×) generation+extraction (4,200 passages, blind-audit self-match 95%); primary endpoint =
-held-out-edge ΔF1 vs volume; decision rule locked. Run 2026-06-12, 30 seeds.
+This is the one we built to settle the rebuttal that every null invites: *you simply didn't have enough data.*
+Pre-registered and locked on 2026-06-10 — Gemma-2-9B, volumes {7, 14, 28, 56, 70} per context subsampled from a
+single 70/context (10×) generation and extraction, 4,200 passages at 95% blind-audit self-match, held-out-edge ΔF1
+versus volume as the primary endpoint, decision rule fixed in advance. Run on 2026-06-12, 30 seeds.
 
-**Result — NULL, the strong outcome** (**Fig. 5**, the headline sweep with the E4B points overlaid; **Fig. 6**,
-reliability vs volume; **Fig. 7**, the per-edge picture at top volume). Held-out-edge ΔF1 by volume: **+0.008,
-+0.012, +0.009, +0.005, +0.005** — no monotonic rise (the curve *declines* past 14/context). At the top volume, paired across the 52 directed edges:
-mean **+0.0046, 95% CI [−0.0053, +0.0144]**, paired-t p=0.36, Wilcoxon p=0.78 — the CI spans zero, the locked NULL
-criterion. **Power is shown, not asserted:** the minimum detectable effect at 80% power was **ΔF1 = 0.014**, and
-the same instrument detects the direct-neighbour effect at the same volume at ~3× that size (+0.040, CI [+0.021,
-+0.059], p=0.0001). The alternate-path / Menger prediction — hop-count as the proxy, on this graph — is refuted at
-adequate power: relational benefit is local direct-neighbour contrast only. This converges with the independent 4×
-E4B peer replication (+0.010, flat) and completes the arc opened by the iteration-2 null — the two nulls and the
-bounded positive are one consistent picture under §6.1's model.
+We bought ten times the data, and the line did not move.
 
-**Vocabulary regression at scale (pre-reg §4).** The gross held-out-edge result is ≈0, and shared vocabulary among
-graph-relatives could only have *contributed positively* to reconstructing the withheld boundary — so the
-net-of-vocabulary reading is a fortiori ≈0. (The full regression on the scaled data is deferred; the a-fortiori
-direction makes it non-load-bearing for the null.)
+Held-out-edge ΔF1 by volume came in at **+0.008, +0.012, +0.009, +0.005, +0.005** — no monotonic rise; if anything it
+drifts *down* past 14/context (**Fig. 5**, the headline sweep with the E4B points overlaid; **Fig. 6**, reliability
+against volume; **Fig. 7**, the per-edge picture at top volume). At the top volume, paired across the 52 directed
+edges, the mean is **+0.0046** with a **95% CI of [−0.0053, +0.0144]** (paired-t p=0.36, Wilcoxon p=0.78) — the
+interval spans zero, which is the pre-registered NULL criterion exactly. And the power is shown, not asserted: the
+minimum detectable effect at 80% power was **ΔF1 = 0.014**, and the same instrument, at the same volume, registers
+the direct-neighbour effect at roughly three times that (+0.040, CI [+0.021, +0.059], p=0.0001). The alternate-path /
+Menger prediction — taking hop-count as the proxy, on this graph — is refuted at adequate power. Relational benefit
+is local direct-neighbour contrast, and nothing more. It converges with the peer replication's 4× E4B result
+(+0.010, flat) and closes the arc the iteration-2 null opened: two nulls and one bounded positive, all of a piece
+under the model in §6.1.
 
-**Sanity (pre-declared secondary, never the headline):** direct-neighbour delta stays clearly positive at every
-volume ✓ — but **declines with volume** (+0.061 → +0.040 from 7 to 70/context). The marginal value of relational
-negatives is largest in the low-data regime — which is the realistic regime for long-tail safety concepts — exactly
-as the boundary-coverage model predicts (volume improves the random-negative baseline, shrinking the premium on
-smart negative selection).
+On the pre-registered vocabulary control at scale (§4): the gross held-out-edge result is already ≈0, and shared
+vocabulary among graph-relatives could only have *helped* reconstruct the withheld boundary — so the
+net-of-vocabulary reading is, a fortiori, ≈0. (The full regression on the scaled data is deferred; the direction of
+the bias makes it non-load-bearing here.)
+
+One secondary result is worth more than its pre-declared footnote. The direct-neighbour effect stays clearly positive
+at every volume — but it *shrinks* as data grows, +0.061 down to +0.040 from 7 to 70/context. The value of a smart
+negative is largest precisely when data is scarce, which is exactly the regime a long-tail safety concept lives in.
+The boundary-coverage model predicts this: more data sharpens the random-negative baseline too, and the premium you
+pay for cleverness erodes as the floor rises.
 
 ## 6. Why: from vertex connectivity to independent-constraint boundary coverage
 
 ### 6.1 The model (from the peer replication; REPLICATION_WRITEUP §6)
-A concept = centroid + class-conditional distribution; the probe's decision boundary sits at the tail-off.
-**Positives sharpen the centroid; independent negatives place boundary facets.** This predicts: extra positives do
-nothing once the centroid saturates (iterations 1–2 null); sibling negatives move the boundary (+0.06, iteration 3);
-benefit ordering = proximity to the tested facet (direct > mixed > held-out); and held-out-edge ≈ 0 *here* because
-SET G's nominally disjoint alternate paths route through the ManipulativeCommunication hub — correlated, not
-independent, constraints. **k counts only insofar as it counts independent constraints.**
+Picture a concept as a centroid with a cloud around it, and the probe's decision boundary sitting where that cloud
+thins out. Positives pull the centroid into focus. Negatives do something different — each one presses on a single
+*facet* of the boundary, the face that points toward it. That one picture predicts everything we saw. Extra positives
+do nothing once the centroid has saturated (the iterations 1–2 null). A sibling negative moves the boundary because
+it leans on the facet you are testing (+0.06, iteration 3). The benefit orders itself by proximity — direct beats
+mixed beats held-out — because a far constraint presses on a different face. And held-out-edge sits at ≈0 *here* for
+a concrete reason: SET G's nominally disjoint alternate paths run through the ManipulativeCommunication hub, so they
+are correlated, not independent, and correlated constraints cannot pin a boundary they do not face. Menger counted
+paths. What a boundary actually needs is *independent* constraints, and k matters only to the extent that it counts
+them.
 
-The model also made a prediction that was then tested rather than fitted. Near-out-of-set inputs are simply another
-facet, and no scheme in this study ever placed a constraint on it; the model therefore predicts that face leaks
-regardless of negative-selection scheme. §7 measures it: it does, at ≈0.23, flat across all three schemes. The
-size of the leak is now measured instead of assumed.
+The model also made a prediction that was then tested rather than fitted, which is the harder thing for a
+post-hoc story to do. Near-out-of-set inputs are simply another facet, and no scheme in this study ever placed a
+constraint on that one — so the model says it should leak, whatever negatives you choose. §7 went and measured it. It
+does, at ≈0.23, flat across all three schemes. The size of the leak is now measured instead of assumed.
 
 ### 6.2 The geometry is consistent (with an anisotropy correction) [peer replication]
-Raw cosine said "everything overlaps" (adjacent 0.971 vs non-adjacent 0.961) — an anisotropy artifact (random
-passage pairs sit at ~0.89). Mean-centred: adjacent pairs separate (+0.166), far-domain controls sit clearly
-outside (−0.147), but *graded* graph distance still doesn't track representation (r ≈ −0.30 at layer 18; −0.27 to
-−0.39, median −0.34, across all 43 layer positions). The geometry independently reproduces the probe story: local
-adjacency real, multi-hop structure absent. Probe results are unaffected (a linear classifier factors out the common
-direction).
+Raw cosine first told a misleading story — everything looked like it overlapped (adjacent pairs 0.971, non-adjacent
+0.961), which is the anisotropy of the space talking (random passage pairs already sit at ~0.89). Mean-centre it and
+the picture sharpens: adjacent pairs separate by +0.166, far-domain controls fall clearly outside (−0.147), but
+*graded* graph distance still refuses to track representation (r ≈ −0.30 at layer 18; −0.27 to −0.39, median −0.34,
+across all 43 layer positions). The geometry tells the same story the probes do — local adjacency is real, multi-hop
+structure isn't — and the probe numbers are untouched by the correction anyway, since a linear classifier divides out
+the common direction. The structure was never hidden. The raw metric was.
 
 ### 6.3 Generation mode is a non-factor (Path 3 first run) [peer replication]
-True autoregressive states vs teacher-forced re-reads: graduation pass rates 0.692 vs 0.693 (causal equivalence);
-the read-own gap (0.454) is prompt-grounding, not a generation effect. The contrast-*prompted* generation variant
-("write A in a way that is not B") remains untested — flagged as future work, since Path 2 shows the
-contrast-as-negative mechanism is the one that works.
+We checked whether the model's *generating* state differs from its *reading* state in a way the probes could exploit.
+It doesn't: true autoregressive states and teacher-forced re-reads graduate at 0.692 versus 0.693, near-identical, as
+causal equivalence would predict; the read-own gap (0.454) is prompt-grounding, not a generation effect. The
+contrast-*prompted* variant — asking the model to write A in a way that is explicitly *not* B — is still untested,
+and is the natural next move, since Path 2 already shows the contrast-as-negative mechanism is the one that pays.
 
 ## 7. The deployment payoff: rejection scaffolds and tiered negatives
 
-*(The two-level probe, multi-scale negatives, and confuser-coverage results in the first three bullets are
-peer-replication extensions on Gemma-4-E4B; the near-OOS control set **and the rejection test** in the last two
-bullets are this work, on Gemma-2-9B.)*
+*(The two-level probe, multi-scale negatives and confuser-coverage results are peer-replication extensions on
+Gemma-4-E4B; the near-OOS controls and the rejection test are this work, on Gemma-2-9B.)*
 
-- **The flat probe's real failure is missing rejection, not resolution.** A 15-way argmax assigns 100% of
-  far-domain inputs to *some* concept; a confidence threshold rejects only 26% of them. A coarse OTHER class
-  (trained on cheap far-domain controls) rejects out-of-family inputs at recall 1.0 with 0% false rejection — and
-  hierarchical *classification* is the wrong fix (flat 0.910 > soft 0.857 > hard 0.850): the scaffold is for
-  rejection, the flat lens for resolution.
-- **You seal the faces you train against.** With negative count fixed, FPR@95%TPR by face: graph-sibling negatives
-  seal neighbours (0.192 → 0.046) but are *no better than random* on off-graph confusers (0.257 vs 0.270);
-  model-mined confusers seal that face (→ 0.058, a 20-point cut) but abandon the others; a cheap "other" tier seals
-  far-OOD completely (→ 0.000). The graph misses the hub-attractor confusions (a majority — 24/42, a small base —
-  of actual misclassifications fall on non-edges; the robust pattern is the shape, not the number).
-  **This rule now replicates across models and codebases:** on Gemma-2-9B (this work, layer 18) siblings seal the
-  neighbour face 0.318 → 0.032 and mining seals the off-graph face 0.335 → 0.119 — different absolute values,
-  identical structure, each scheme abandoning the face it does not train.
-- **The recipe, and its stated limit:** cheap tiers everywhere (graph siblings + "other"), a cheap audit to locate
-  the off-graph gap, expensive mining only on that gap. Calibration drift is a live failure mode (thresholds set on
-  train positives collapsed to 34% held-out TPR). The recipe buys the easy rejection regime and the neighbour and
-  off-graph faces; it does **not** buy the near-out-of-set face, which is the one a deployed monitor meets most
-  often — legitimate influence is far commoner in the wild than either far-domain noise or textbook manipulation.
-  A monitor built to this recipe should be assumed to fire on roughly one honest-influence input in four until
-  that face is trained against explicitly.
-- **Near-OOS controls (this work).** The far controls are the easy rejection regime — a passage about
-  photosynthesis was never going to read as gaslighting. We generated and blind-audited the hard one:
-  legitimate-influence concepts adjacent to the family (Negotiation, Advertising, Lobbying; 84 passages, 84/84
-  blind self-match, zero in-set drift), with the PersuasiveCommunication lens analytically quarantined (its own
-  training set contains honest ads; firing there is a true positive by construction). The analysis was
-  pre-committed before the run: the rejection test scores the other 14 lenses, with FPR reported both pooled and
-  split by whether a row's context was held out of the scoring lens's training fold.
+The flat probe's real weakness is not telling concepts apart — it is not knowing when to keep its mouth shut. A
+15-way argmax assigns 100% of far-domain inputs to *some* concept, confidently calling a passage about the weather a
+form of manipulation; a confidence threshold rejects only 26% of them. Add a coarse OTHER class trained on cheap
+far-domain controls and out-of-family inputs are rejected at recall 1.0 with zero false rejection of real concepts.
+Note what *doesn't* fix it: hierarchical *classification* actively hurts (flat 0.910 > soft two-level 0.857 > hard
+0.850). The scaffold's job is rejection; resolution stays with the flat lens.
 
-- **The gap the recipe does not close (this work; Fig. 8).** Run as pre-committed: **nothing seals the near-OOS
-  face.**
-  Legitimate-influence passages leak at FPR 0.164 / 0.175 / 0.182 (random / graph-sibling / model-mined) at a
-  95%-TPR operating point, and paired across the 14 scored lenses no scheme improves on random negatives —
-  graph-sibling **+0.010**, 95% CI [−0.074, +0.095], p=0.86; model-mined **+0.018**, CI [−0.101, +0.136], p=1.00.
-  **The null is instrumented, not asserted:** the same lenses, thresholds, and paired test register a **−0.286**
-  seal on the neighbour face (p=0.0001) and **−0.216** off-graph (p=0.006), so a comparable seal here would have
-  been unmissable. The pre-committed context split matters — leakage is significantly worse when the row's context
-  was held out of the lens's training fold (0.225 vs 0.158, +0.068, p=0.016), making the honest out-of-distribution
-  figure **≈0.23, roughly one honest-influence passage in four**, not the flattering pooled 0.16. And the leak is
-  concentrated rather than diffuse: **UnwarrantedPraise (0.589) and ExcessiveAgreement (0.497)** carry most of it
-  while four lenses sit at 0.000 — honest advertising reads as unwarranted praise, cooperative negotiation as
-  excessive agreement, and those are precisely the two concepts iteration 2's audit already flagged as
-  definitionally umbrella-ish. The quarantine was vindicated by the data (PersuasiveCommunication fires at
-  0.238–0.523, well clear of every scored lens). Calibration drift reproduces in direction but milder than on E4B
-  (train-calibrated thresholds drop held-out TPR to 0.75–0.83, not 0.34). *Scope: `multi_scale` is not run on this
-  side — it trains against far-domain controls and only one usable far set exists here, so training and evaluating
-  on it would leak; far-OOD is evaluation-only in this run and its column is not comparable to the sealed 0.000
-  above.*
+The governing rule, once you measure it, is blunt: **you seal exactly the faces you train against.** Holding the
+negative count fixed and reading false-positive rate at a 95%-true-positive operating point, graph-sibling negatives
+seal the neighbour face (0.192 → 0.046) but do no better than random on off-graph confusers (0.257 against random's
+0.270); model-mined confusers seal *that* face (→ 0.058, a twenty-point cut) but let the others slide; and a cheap
+"other" tier shuts the far-OOD face completely (→ 0.000). The graph quietly misses the hub-attractor confusions — a
+majority of actual misclassifications (24 of 42, on a small base) fall on non-edges, so it is the shape of the miss,
+not the exact count, that matters. **The rule now replicates across models and codebases:** on Gemma-2-9B (this work,
+layer 18) siblings seal the neighbour face 0.318 → 0.032 and mining seals the off-graph face 0.335 → 0.119 —
+different absolute values, identical structure, each scheme abandoning the face it does not train (**Fig. 8A**).
+
+So the recipe is straightforward. Cheap tiers everywhere — graph siblings plus an "other" class — then a cheap audit
+to find the off-graph gap, then expensive mining spent only on that gap. One caution, and it is not hypothetical:
+calibration drift is a live failure mode. Thresholds set on training positives collapsed to 34% held-out true-positive
+rate, and in production there is no held-out label to catch it before it costs you.
+
+That is where the recipe stops, and we went looking for the edge deliberately. The far controls are the easy
+rejection regime — a passage about basketball is never going to read as gaslighting. The hard regime is the
+legitimate neighbour: influence that is honest but adjacent. We generated and blind-audited that set — Negotiation,
+Advertising, Lobbying, 84 passages, 84 of 84 clean on a blind self-match with zero drift into the in-set concepts —
+and quarantined the PersuasiveCommunication lens by hand, because its own training data contains honest
+advertisements, so a fire there is a true positive by construction rather than a leak. The analysis was pre-committed
+before the run: score the other 14 lenses, report FPR both pooled and split by whether a passage's context was held
+out of the scoring lens's training fold.
+
+**Nothing seals that face** (**Fig. 8**). Legitimate-influence passages leak at 0.164 / 0.175 / 0.182 under random,
+graph-sibling and model-mined negatives respectively, and paired across the 14 scored lenses no scheme improves on
+random at all: graph-sibling **+0.010**, 95% CI [−0.074, +0.095], p=0.86; model-mined **+0.018**, CI [−0.101,
++0.136], p=1.00. The null is instrumented, not asserted — the same lenses, the same thresholds and the same paired
+test register a **−0.286** seal on the neighbour face (p<0.001) and **−0.216** off-graph (p=0.006), so a seal of
+that size here would have been unmissable. The pre-committed context split earns its keep: leakage is significantly
+worse when the passage's context was held out of the lens's training fold (0.225 against 0.158, +0.068, p=0.016), so
+the honest out-of-distribution figure is **≈0.23 — roughly one honest-influence passage in four** — not the
+flattering pooled 0.16.
+
+And the leak is concentrated, not diffuse, which makes it actionable. **UnwarrantedPraise (0.589) and
+ExcessiveAgreement (0.497)** carry most of it while four lenses sit at 0.000: honest advertising reads as unwarranted
+praise, cooperative negotiation as excessive agreement. Those are precisely the two concepts iteration 2's audit
+already flagged as definitionally umbrella-ish, which is a satisfying place for a deployment failure to land. The
+quarantine was vindicated by the data rather than justified after the fact — PersuasiveCommunication fires at
+0.238–0.523, well clear of every scored lens — and calibration drift reproduces in direction though more mildly than
+on E4B (train-calibrated thresholds drop held-out TPR to 0.75–0.83, not 0.34). *One scope note: `multi_scale` is not
+run on this side. It trains against far-domain controls and only one usable far set exists here, so training and
+evaluating on it would leak; far-OOD is evaluation-only in this run and its rate is not comparable to the sealed
+0.000 above.*
+
+The practical upshot is a sentence a deployment team can act on. The recipe buys you the easy rejection regime and
+the two faces you can name in advance; it does not buy the near-out-of-set face, which is the one a real monitor
+meets most often, because legitimate influence is far commoner in the wild than either far-domain noise or textbook
+manipulation. Until that face is trained against explicitly, assume the monitor fires on about one honest-influence
+input in four — and assume it does so through two specific lenses.
 
 ## 8. Synthesis & conclusion
 
-Relational structure, for safety probing, is worth exactly this much: **direct relations make the best cheap hard
-negatives** (+0.06, ~⅓ lexical, two models, independently replicated) — **and nothing more flows through this
-graph's connectivity at any volume we tested** (10× pre-registered sweep: top-volume CI spans zero against a shown
-MDE of 0.014). The deeper role of relationships is not classification at all: under the
-boundary-coverage model they are *navigation* — the edges along which a coverage-expansion loop would explore from
-mapped concepts toward the model's actual confusers (the cartography framing). And the deployment recipe this
-licenses comes with its own measured boundary: it seals the faces it trains against and leaves the hard rejection
-regime — honest influence, the input a real monitor meets most — open at roughly one in four. A negative result,
-honestly bounded, plus a mechanism that predicts it, plus a deployment recipe *and* the map of where that recipe
-runs out.
+So here is what relational structure is worth, measured rather than assumed. Direct relations make the best cheap
+hard negatives — about +0.06 F1, a third of it lexical, holding across two models and an independent replication —
+and nothing further flows through the graph's connectivity at any data volume we could buy (the 10× sweep's
+top-volume interval spans zero against a minimum detectable effect of 0.014). The grand version of the hypothesis,
+the one where the graph's topology does the heavy lifting, is not what the powered test found.
+
+But the relationships were not the wrong thing to study — only the wrong thing to expect *discrimination* from. Their
+real job, under the boundary-coverage picture, is not classification but navigation: a map of where to look next, the
+edges marking the routes out from the concepts you have mapped toward the confusers the model has and you have not
+named yet.
+
+And the recipe that falls out of all this comes with its own boundary, which we measured rather than guessed. It
+seals the faces it trains against. It leaves the hard rejection regime — honest influence, the input a real monitor
+actually meets — open at roughly one passage in four, through two nameable lenses. That is the most useful sentence
+in the paper for anyone planning to deploy one of these things, and we would not have it if we had stopped at the
+result that flattered the method.
+
+A negative result, but a bounded one — with a mechanism that predicts it, a recipe you can deploy, and an honest map
+of where that recipe runs out. We will take that over an unbounded yes.
 
 ## 9. Methods (the rigor section)
 
-Pre-registration before every powered run after iteration 1 (R4, Path 2, iteration 4 — all locked with decision
-rules); F1 as the pre-registered primary metric throughout (balanced accuracy and AUC give the same ordering in
-every table; AUC is the most ceiling-compressed);
-out-of-distribution evaluation via held-out contexts; controls: count-matched negatives, placebo-graph permutation,
-vocabulary regression, held-out-edge isolation, anisotropy-corrected geometry; adversarial verification of every
-positive (multi-agent refutation passes; iteration 1's noise-positive caught this way); cross-model independent
-replication; all data, code, and result JSONs committed with provenance. Where a result is a null, a positive
-control is reported alongside it on the same instrument — the §5.4 direct-neighbour effect against the held-out-edge
-null, the §7 neighbour and off-graph seals against the near-OOS null — so that "we did not detect it" is separable
-from "we could not have detected it".
+Every powered run after iteration 1 was pre-registered with its decision rule locked in advance (R4, Path 2,
+iteration 4, and the §7 rejection test). F1 was the pre-registered primary metric throughout; balanced accuracy and
+AUC give the same ordering in every table, with AUC the most ceiling-compressed of the three. Evaluation is
+out-of-distribution by held-out context. The controls are count-matched negatives, placebo-graph permutation,
+vocabulary regression, held-out-edge isolation, and anisotropy-corrected geometry. Every positive result was
+adversarially verified by independent refutation passes — the mechanism that caught iteration 1's noise-positive
+before it could become a finding. The whole study was cross-model peer-replicated, and all data, code and result
+JSONs are committed with provenance.
+
+One rule is worth stating on its own, because it is what makes three nulls readable. **Every null in this paper ships
+with a positive control on the same instrument** — the §5.4 direct-neighbour effect standing behind the held-out-edge
+null, the §7 neighbour and off-graph seals standing behind the near-OOS null. A null measured by an instrument that
+has just been shown to detect a comparable effect is a different object from a null measured by an instrument of
+unknown sensitivity. It keeps "we did not detect it" separable from "we could not have detected it", which is the
+distinction iteration 1 failed and everything after it was built to respect.
 
 ## Acknowledgements
 
@@ -300,18 +337,24 @@ repository records the full provenance of each result.
 
 ## 10. Limitations & future work
 
-- Single concept family (SET G manipulation/deception cluster); single probe family (linear/logistic; MLP spot-checks);
-  curated human graph (though §6.2 shows its local layer is model-real).
-- Near-ceiling discrimination compresses headroom for *any* manipulation — deltas are small by construction; the
-  FPR@95%TPR operating-point analysis (§7) is the sensitive instrument, not pairwise AUC.
-- The near-OOS test rests on 84 passages across three concepts (7 per context). Adequate for the headline null —
-  the CIs are tight around zero and the positive controls fire — but the per-control breakdown (Advertising 0.190 /
-  Lobbying 0.179 / Negotiation 0.155) is within noise and should not be read as a ranking.
-- Untested: contrast-prompted self-generation (Path 3 graph-aware variant) feeding a graduation loop; the topology
-  retest counting *independent* constraints rather than raw k; activation-cell cartography (dark-region discovery)
-  as the principled coverage-expansion loop; and — the obvious follow-on from §7 — whether training *against*
-  near-OOS negatives seals that face without costing the others, which the boundary-coverage model predicts it
-  should.
+The honest fences. This is one concept family (the SET G manipulation / deception cluster) and one probe family
+(linear / logistic, with MLP spot-checks), over a curated human graph — though §6.2 shows that graph's local layer is
+real in the model, not imposed on it. Discrimination runs near ceiling, which compresses the headroom for *any*
+manipulation of the negatives, so the deltas are small by construction; the sensitive instrument here is the
+false-positive rate at an operating point (§7), not pairwise AUC.
+
+The §7 result carries a bound of its own. It rests on 84 passages across three control concepts, seven per context.
+That is adequate for the headline null — the intervals are tight around zero and the positive controls fire hard —
+but the per-control breakdown (Advertising 0.190, Lobbying 0.179, Negotiation 0.155) sits within noise and should not
+be read as a ranking of which honest activity trips a manipulation lens hardest. Answering *that* would need a
+larger control set, and it is cheap to build.
+
+Several things remain untested by design: contrast-prompted self-generation (the Path 3 graph-aware variant) feeding
+a graduation loop; a topology retest that counts *independent* constraints rather than raw connectivity; and
+activation-cell cartography — finding the dark, unmapped regions of the model's own representation — as the
+principled way to grow coverage. The most immediate of them is the direct follow-on from §7: whether training
+*against* near-OOS negatives seals that face without costing the others. The boundary-coverage model says it should,
+and unlike most of what is listed here, it needs one generation run and an afternoon.
 
 ---
 
@@ -362,5 +405,12 @@ within-model (Gemma-2-9B)."
       replication's reported figure, or ask them to emit the artifact.
 - [x] Jason's voice pass on §§1–4 (2026-08-05), ported from the parked `PAPER_DRAFT_voice.md` and updated for the
       near-OOS result (contribution 5 added to §1; §2's layer-sweep count corrected to 43).
-- [ ] Voice pass on §§5–10 — still in the scaffold's terser register. §8 in particular was written to close the
-      paper and should be read aloud.
+- [x] Voice pass on §§5–10 (2026-08-05). §§5.1–5.4, 6.1–6.3, 7, 8, 9, 10 converted from scaffold bullets to
+      continuous prose; §7's five bullets became a single argued section that ends on a sentence a deployment team
+      can act on; §9 now states the positive-control-with-every-null rule explicitly. Every number re-verified
+      against the JSONs after the rewrite.
+- [ ] **Jason's own read-through.** The prose is *in* your register — it was ported from your voice draft — but you
+      have not read a word of it. The peaks are at: §3's "It was wrong.", §5.4's "We bought ten times the data, and
+      the line did not move.", §6.2's "The structure was never hidden. The raw metric was.", and §8's close. If any
+      of them feels forced, flatten it; a paper punishes forte harder than a blog does.
+- [ ] Decide the 34% provenance question (§7) with p0ss, and build-or-drop a Path-2 figure.
