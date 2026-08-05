@@ -211,7 +211,8 @@ bullets are this work, on Gemma-2-9B.)*
   pre-committed before the run: the rejection test scores the other 14 lenses, with FPR reported both pooled and
   split by whether a row's context was held out of the scoring lens's training fold.
 
-- **The gap the recipe does not close (this work).** Run as pre-committed: **nothing seals the near-OOS face.**
+- **The gap the recipe does not close (this work; Fig. 8).** Run as pre-committed: **nothing seals the near-OOS
+  face.**
   Legitimate-influence passages leak at FPR 0.164 / 0.175 / 0.182 (random / graph-sibling / model-mined) at a
   95%-TPR operating point, and paired across the 14 scored lenses no scheme improves on random negatives —
   graph-sibling **+0.010**, 95% CI [−0.074, +0.095], p=0.86; model-mined **+0.018**, CI [−0.101, +0.136], p=1.00.
@@ -287,8 +288,9 @@ repository records the full provenance of each result.
 - [x] Abstract + §8 brackets resolved (NULL).
 - [x] §7 near-OOS rejection test run (2026-08-05) — result folded into the abstract, §6.1, §7, §8, §9, §10.
       Source: `../NEAR_OOS_RESULT_NOTE.md`, `../results/near_oos_rejection/near_oos_rejection.json`.
-- [ ] §7 figure: FPR-by-face × scheme (4 faces, 3 schemes) — near-OOS flat while neighbour and off-graph collapse.
-      There is currently **no figure for §7 at all**; this one carries the whole section's argument.
+- [x] §7 figure built (2026-08-05): **Fig. 8**, `../results/near_oos_rejection/fig8_fpr_by_face.png` — panel A
+      levels by face × scheme, panel B paired effects with 95% CIs (positive controls clear zero, near-OOS
+      straddles it). Caption in `../NEAR_OOS_RESULT_NOTE.md`; rebuild via `scripts/render_near_oos_figure.py`.
 - [ ] Decide whether `PAPER_DRAFT_voice.md` is retired or brought forward — it does **not** carry any of the
       2026-08-05 near-OOS edits and is now materially out of date.
 - [ ] Figures: fig5 (headline sweep + E4B overlay), fig7 (per-edge at top volume) from `iteration4_scaling/figures/`;

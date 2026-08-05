@@ -74,6 +74,22 @@ data rather than justified after the fact.
 from 0.95 to 0.75–0.83 (and near-OOS FPR to a falsely reassuring ~0.05). Same direction as §7's finding, less
 severe than p0ss's collapse to 34% — report as a milder reproduction, not a match.
 
+## Figure
+
+[`results/near_oos_rejection/fig8_fpr_by_face.png`](results/near_oos_rejection/fig8_fpr_by_face.png) —
+rebuild with `python scripts/render_near_oos_figure.py` (reads the committed JSON; nothing hardcoded).
+
+> **Fig. 8 — Nothing seals the near-out-of-set face.** False-positive rate at a 95%-TPR operating point for
+> per-concept one-vs-rest lenses on Gemma-2-9B (layer 18), by boundary face and negative-selection scheme;
+> 14 lenses with PersuasiveCommunication quarantined, negatives count-matched to graph degree. **(A)** Levels.
+> Graph-sibling negatives collapse the neighbour face (0.318 → 0.032) but not the off-graph face; model-mined
+> confusers collapse the off-graph face (0.335 → 0.119) and only partly the neighbour one. The near-out-of-set
+> face — legitimate influence, trained against by nothing — sits flat at 0.164 / 0.175 / 0.182. **(B)** Paired
+> effect estimates against the random-negative baseline with 95% CIs. Both positive controls clear zero
+> (−0.286, p<0.001; −0.216, p=0.006) while both near-OOS intervals straddle it (+0.010, p=0.86; +0.018, p=1.00),
+> so the null is separable from an underpowered one. Far-OOD is omitted: `multi_scale` is not run on this side, so
+> that face is untrained here and its rate is not comparable to §7's sealed 0.000.
+
 ## Bounds and deviations (state these in the paper)
 
 - **`multi_scale` was not run.** It trains against far-domain controls, and this repo has one usable far-domain
