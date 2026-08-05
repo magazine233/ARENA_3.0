@@ -1,0 +1,20 @@
+=== Condition A blind label-audit (15-concept, most-specific-wins) ===
+
+  ManipulativeCommunication          self-match 197/280  drifts-> Disinformation:34, Misdirection:24, PsychologicalExploitation:13
+  PersuasiveCommunication            self-match 280/280  drifts-> -
+  Propaganda                         self-match 279/280  drifts-> ManipulativeCommunication:1
+  Misinformation                     self-match 279/280  drifts-> UnwarrantedPraise:1
+  Disinformation                     self-match 259/280  drifts-> ManipulativeCommunication:16, PsychologicalExploitation:3, Deepfake:1
+  PsychologicalExploitation          self-match 276/280  drifts-> ManipulativeCommunication:1, UnwarrantedPraise:1, Threaten:1
+  SycophancyRegister                 self-match 251/280  drifts-> ExcessiveAgreement:15, UnwarrantedPraise:14
+  UnwarrantedPraise                  self-match 264/280  drifts-> ManipulativeCommunication:8, SycophancyRegister:5, ExcessiveAgreement:2
+  ExcessiveAgreement                 self-match 259/280  drifts-> Disinformation:12, UnwarrantedPraise:9
+  Misdirection                       self-match 273/280  drifts-> ManipulativeCommunication:5, PersuasiveCommunication:2
+  Threaten                           self-match 279/280  drifts-> Misdirection:1
+  SpecificationGamingProcess         self-match 280/280  drifts-> -
+  StrategicDeceptionPlanningProcess  self-match 266/280  drifts-> ManipulativeCommunication:12, Propaganda:1, SpecificationGamingProcess:1
+  UlteriorMotiveDetection            self-match 265/280  drifts-> ManipulativeCommunication:14, SpecificationGamingProcess:1
+  Deepfake                           self-match 271/280  drifts-> UlteriorMotiveDetection:5, ManipulativeCommunication:3, UnwarrantedPraise:1
+
+Overall self-match: 3978/4200 (95%)
+Wrote audit/condition_a_audit.json

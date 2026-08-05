@@ -9,7 +9,7 @@
 | **iteration 1** | def-vs-relational probing + Menger (multiclass) | — | null (later understood as the *wrong question*) |
 | **iteration 2** | pair-matched, powered, pre-registered Menger | the validity + power fix | **powered NULL** (partial Spearman −0.125) |
 | **iteration 3** | relations as **hard negatives** | **Path 2** | **bounded positive** — local + ~⅓ lexical |
-| **iteration 4** (next) | scale-up retest of alternate-path / Menger | **Path 1 (scale) × Path-2 held-out-edge** | TBD — Jason's GPU |
+| **iteration 4** (done 2026-06-12) | scale-up retest of alternate-path / Menger | **Path 1 (scale) × Path-2 held-out-edge** | **powered NULL** — top volume +0.005, CI spans 0, MDE 0.014 |
 | (later) | generate-mode vs read-mode | **Path 3** | not started |
 
 ## Owners
@@ -28,7 +28,7 @@
 - **shared machinery — DO NOT MOVE (both pipelines reference these paths):** `scripts/` `data/` `activations/` `audit/` `pivot/` `results/`
 
 ## Current state (one line)
-Path 2 done + bounded; p0ss converges on E4B; the clean graph-contrastive **held-out-edge ≈ 0 at 1×** → **next = iteration-4 scale-up retest** of the alternate-path/Menger prediction (Jason's GPU). Detail: `ITERATION3_TIMELINE.md`, `iteration4_scaling/PREREGISTRATION.md`.
+**Iteration 4 complete (2026-06-12): powered, pre-registered NULL** on alternate-path/Menger — held-out-edge flat-to-declining {+.008/+.012/+.009/+.005/+.005} across 7→70/ctx, top-volume CI spans 0, MDE 0.014 shown; direct effect positive but declining (+.061→+.040 — relational negatives are a *low-data lever*). Verdict + figures: `iteration4_scaling/ITERATION4_results_explorer.ipynb`. **Next = paper assembly** (`paper/PAPER_DRAFT.md` §5.4 filled) + near-OOS rejection test (p0ss).
 
 ## Conventions (going forward)
 - New **code** → `scripts/` with a stage-clear name (`scaling_*`). New **results** → `results/<stage>/`. New **stage docs** → a `<stage>/` folder.

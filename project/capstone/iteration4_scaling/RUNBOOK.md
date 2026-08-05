@@ -61,6 +61,8 @@ scp scripts/extract_activations.py ubuntu@<ip>:/home/ubuntu/extract_activations.
 
 # Instance: venv + install + HF auth
 python3 -m venv ~/tlenv && source ~/tlenv/bin/activate
+pip install --upgrade pip setuptools wheel   # REQUIRED first — stock venv pip is old
+pip install "pyyaml>=6"                      # binary wheel; old pip otherwise picks PyYAML 5.4.1, whose source build fails under modern Cython ('build_ext' has no 'cython_sources')
 pip install transformer_lens torch einops jaxtyping "huggingface_hub[cli]" Pillow
 hf auth login
 
